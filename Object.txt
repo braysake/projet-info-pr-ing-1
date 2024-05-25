@@ -1,0 +1,17 @@
+@0 healing_potion 1 1 5 100 1
+@1 apple 1 1 2 10 1
+@2 strength_potion 2 1 10 5 2
+@3 armor_potion 1 1 2 5 3
+@4 scrap 2 0 64 0 0
+@5 chip 2 0 32 0 0
+@6 motherboard 3 1 8 20 5
+@7 wire 1 1 64 2 5
+@8 battery 2 1 16 10 5
+@9 alien_bone 1 1 32 5 4
+@10 alien_organ 2 1 8 5 2
+@11 alien_brain 3 1 1 80 5
+@12 bullet 1 1 64 0 0
+@13 jelly 1 0 64 0 0
+
+
+

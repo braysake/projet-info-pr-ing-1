@@ -1,0 +1,6 @@
+@0 old_helmet 2 5
+@1 helmet 3 10
+@2 solid_helmet 5 15
+@3 old_armor 5 7
+@4 robot_armor 10 12
+@5 fancy_armor 15 20
