@@ -9,19 +9,19 @@
 #define COLOR_PINK 8
 #define COLOR_BROWN 9
 #define COLOR_BEIGE 10
-#define COLOR_BEIGEclair 11
+#define COLOR_BEIGE_LIGHT 11
 
-#define MAXROOM 100
+#define MAX_ROOM 100
 
 typedef struct{
     int x;
     int y;
-} position;
+} Position;
     
 typedef struct {
     char* name;
     int id;
-    position coordinates;
+    Position coordinates;
     int weight;
     int single_use;
     int stack;
@@ -47,7 +47,7 @@ typedef enum{
 typedef struct {
     char* name;
     int id;
-    position coordinates;
+    Position coordinates;
     Type type;
     int range;
     int dmg;
@@ -57,18 +57,17 @@ typedef struct {
 typedef struct {
     char* name;
     int id;
-    position coordinates;
+    Position coordinates;
     int weight;
     int shield;
 }Armor;
 
-//for ennemy
+//for enemy
 typedef enum{
     GIGA_ROBOT,
     DRONE,
     ALIEN,
     ROBOT,
-    MECA_OCTOPUS,
     BLOB,
     TURRET,
 }Names;
@@ -81,7 +80,7 @@ typedef enum{
 //
 typedef struct {
     Names name;
-    position coordinates;
+    Position coordinates;
     int life;
     int armor;
     int strength;
@@ -96,18 +95,18 @@ typedef struct {
 typedef struct {
   int x;
   int y;
-  int roomnum1;
-  int roomnum2;
+  int roomNum1;
+  int roomNum2;
   int direction;
 } door;
 
 typedef struct {
-  int roomdoor[4];
-  int numofdoor;
-  int xmin;
-  int xmax;
-  int ymin;
-  int ymax;
+  int room_door[4];
+  int num_door;
+  int x_min;
+  int x_max;
+  int y_min;
+  int y_max;
   int nbr_enemy;
   Enemy* tab_enemy;
   int nbr_object;
@@ -119,7 +118,7 @@ typedef struct {
 }room;
 
 typedef struct{
-    position coordinates;
+    Position coordinates;
     int room;
     int orientation; //o up 1 right 2 down 3 left
     int life;
@@ -149,15 +148,15 @@ int absolute_value(int a){
     return a;
     }
 
-Weapon search_blade(int ID,FILE* fichier){
-    int verif,test,temp;
+Weapon search_blade(int ID,FILE* file){
+    int verify,test,temp;
     Weapon blade;
-	rewind(fichier);
-    char c=getc(fichier);
+	rewind(file);
+    char c=getc(file);
 	while(c != EOF){
 		if(c=='@'){
-            verif=fscanf(fichier,"%d",&test);
-            if(verif==EOF){
+            verify=fscanf(file, "%d", &test);
+            if(verify == EOF){
                 printf("error load charging");
                 exit(3);
                 }
@@ -169,13 +168,13 @@ Weapon search_blade(int ID,FILE* fichier){
                     printf("error calloc");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%s",blade.name);
-                if(verif==EOF){
+                verify=fscanf(file, "%s", blade.name);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&temp);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &temp);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
@@ -188,40 +187,40 @@ Weapon search_blade(int ID,FILE* fichier){
                         break;
                 }
 
-                verif=fscanf(fichier,"%d",&blade.range);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &blade.range);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&blade.dmg);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &blade.dmg);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&blade.weight);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &blade.weight);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
                 return blade;
                 }   
 		    }
-        c=getc(fichier);
+        c=getc(file);
         }
     printf("formatting error blade.txt");
     exit(12);
     }
 
-Armor search_stuff(int ID,FILE* fichier){
-    int verif,test;
-    char* verif_name=NULL;
+Armor search_stuff(int ID,FILE* file){
+    int verify,test;
+    char* verify_name=NULL;
     Armor stuff;
-	rewind(fichier);
-    char c=getc(fichier);
+	rewind(file);
+    char c=getc(file);
 	while(c != EOF){
 		if(c=='@'){
-            verif=fscanf(fichier,"%d",&test);
-            if(verif==EOF){
+            verify=fscanf(file, "%d", &test);
+            if(verify == EOF){
                 printf("error load charging");
                 exit(3);
                 }
@@ -233,41 +232,41 @@ Armor search_stuff(int ID,FILE* fichier){
                     printf("error calloc");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%s",stuff.name);
-                if(verif==EOF){
+                verify=fscanf(file, "%s", stuff.name);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
 
-                verif=fscanf(fichier,"%d",&stuff.weight);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &stuff.weight);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&stuff.shield);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &stuff.shield);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
                 return stuff;
                 }   
 		    }
-        c=getc(fichier);
+        c=getc(file);
         }
     printf("formatting error stuff.txt");
     exit(12);
     }
 
-Object search_object(int ID,FILE* fichier){
-    int verif,test;
+Object search_object(int ID,FILE* file){
+    int verify,test;
     Object think;
-	rewind(fichier);
-    char c=getc(fichier);
+	rewind(file);
+    char c=getc(file);
 
 	while(c != EOF){
 		if(c=='@'){
-            verif=fscanf(fichier,"%d",&test);
-            if(verif==EOF){
+            verify=fscanf(file, "%d", &test);
+            if(verify == EOF){
                 printf("error load charging");
                 exit(3);
                 }
@@ -280,49 +279,49 @@ Object search_object(int ID,FILE* fichier){
                     printf("error calloc");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%s",think.name);
-                if(verif==EOF){
+                verify=fscanf(file, "%s", think.name);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&think.weight);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &think.weight);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&think.single_use);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &think.single_use);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&think.max_stack);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &think.max_stack);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
 
-                verif=fscanf(fichier,"%d",&think.augmentation);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &think.augmentation);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
-                verif=fscanf(fichier,"%d",&think.what_augmentation);
-                if(verif==EOF){
+                verify=fscanf(file, "%d", &think.what_augmentation);
+                if(verify == EOF){
                     printf("error load charging");
                     exit(3);
                     }
                 return think;
                 }  
 		    }
-        c=getc(fichier);
+        c=getc(file);
         }
     printf("formatting error Object.txt");
     exit(12);
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//fonction hero
-hero build_hero(FILE* fichier_blade,FILE* fichier_stuff){
+//function hero
+hero build_hero(FILE* blade_file, FILE* fichier_stuff){
     hero player;
     player.coordinates.x=0;
     player.coordinates.y=0;
@@ -341,7 +340,7 @@ hero build_hero(FILE* fichier_blade,FILE* fichier_stuff){
         printf("error calloc inventory");
         exit(2);
         }
-    player.blade=search_blade(0,fichier_blade);
+    player.blade=search_blade(0, blade_file);
     player.stuff=search_stuff(0,fichier_stuff);
 
     return player;
@@ -701,8 +700,8 @@ searchreallyneardoor (door possibledoor, door testdoor)
 					&& possibledoor.y <= (testdoor.y) + 7
 					&& possibledoor.direction != testdoor.direction)
 				{
-					if (possibledoor.roomnum1 != testdoor.roomnum1
-							&& possibledoor.roomnum2 != testdoor.roomnum1
+					if (possibledoor.roomNum1 != testdoor.roomNum1
+							&& possibledoor.roomNum2 != testdoor.roomNum1
 							&& possibledoor.direction != testdoor.direction)
 						{
 							return 1;
@@ -715,8 +714,8 @@ searchreallyneardoor (door possibledoor, door testdoor)
 					&& possibledoor.x >= (testdoor.x) + 1
 					&& possibledoor.x <= (testdoor.x) + 7)
 				{
-					if (possibledoor.roomnum1 != testdoor.roomnum1
-							&& possibledoor.roomnum2 != testdoor.roomnum1
+					if (possibledoor.roomNum1 != testdoor.roomNum1
+							&& possibledoor.roomNum2 != testdoor.roomNum1
 							&& possibledoor.direction != testdoor.direction)
 						{
 							return 1;
@@ -729,8 +728,8 @@ searchreallyneardoor (door possibledoor, door testdoor)
 					&& possibledoor.y <= (testdoor.y) - 1
 					&& possibledoor.y >= (testdoor.y) - 7)
 				{
-					if (possibledoor.roomnum1 != testdoor.roomnum1
-							&& possibledoor.roomnum2 != testdoor.roomnum1
+					if (possibledoor.roomNum1 != testdoor.roomNum1
+							&& possibledoor.roomNum2 != testdoor.roomNum1
 							&& possibledoor.direction != testdoor.direction)
 						{
 							return 1;
@@ -743,8 +742,8 @@ searchreallyneardoor (door possibledoor, door testdoor)
 					&& possibledoor.x <= (testdoor.x) - 1
 					&& possibledoor.x >= (testdoor.x) - 7)
 				{
-					if (possibledoor.roomnum1 != testdoor.roomnum1
-							&& possibledoor.roomnum2 != testdoor.roomnum1
+					if (possibledoor.roomNum1 != testdoor.roomNum1
+							&& possibledoor.roomNum2 != testdoor.roomNum1
 							&& possibledoor.direction != testdoor.direction)
 						{
 							return 1;
@@ -760,25 +759,25 @@ confirmoverlap (room * roomsizetab, room newroom, int roomcount)
 {
 	for (int i = 0; i < roomcount; i++)
 		{
-			if ((((newroom.ymin >= roomsizetab[i].ymin - 1
-						 && newroom.ymin <= roomsizetab[i].ymax + 1)
-						|| (newroom.ymax >= roomsizetab[i].ymin - 1
-								&& newroom.ymax <= roomsizetab[i].ymax + 1))
+			if ((((newroom.y_min >= roomsizetab[i].y_min - 1
+						 && newroom.y_min <= roomsizetab[i].y_max + 1)
+						|| (newroom.y_max >= roomsizetab[i].y_min - 1
+								&& newroom.y_max <= roomsizetab[i].y_max + 1))
 					 &&
-					 ((newroom.xmin >= roomsizetab[i].xmin - 1
-						 && newroom.xmin <= roomsizetab[i].xmax + 1)
-						|| (newroom.xmax >= roomsizetab[i].xmin - 1
-								&& newroom.xmax <= roomsizetab[i].xmax + 1)))
+					 ((newroom.x_min >= roomsizetab[i].x_min - 1
+						 && newroom.x_min <= roomsizetab[i].x_max + 1)
+						|| (newroom.x_max >= roomsizetab[i].x_min - 1
+								&& newroom.x_max <= roomsizetab[i].x_max + 1)))
 					||
-					(((roomsizetab[i].ymin >= newroom.ymin - 1
-						 && roomsizetab[i].ymin <= newroom.ymax + 1)
-						|| (roomsizetab[i].ymax >= newroom.ymin - 1
-								&& roomsizetab[i].ymax <= newroom.ymax + 1))
+					(((roomsizetab[i].y_min >= newroom.y_min - 1
+						 && roomsizetab[i].y_min <= newroom.y_max + 1)
+						|| (roomsizetab[i].y_max >= newroom.y_min - 1
+								&& roomsizetab[i].y_max <= newroom.y_max + 1))
 					 &&
-					 ((roomsizetab[i].xmin >= newroom.xmin - 1
-						 && roomsizetab[i].xmin <= newroom.xmax + 1)
-						|| (roomsizetab[i].xmax >= newroom.xmin - 1
-								&& roomsizetab[i].xmax <= newroom.xmax + 1))))
+					 ((roomsizetab[i].x_min >= newroom.x_min - 1
+						 && roomsizetab[i].x_min <= newroom.x_max + 1)
+						|| (roomsizetab[i].x_max >= newroom.x_min - 1
+								&& roomsizetab[i].x_max <= newroom.x_max + 1))))
 				{
 					return 0;							//overlap
 				}
@@ -803,57 +802,57 @@ confirmdoorloc (door * tabdoor, door testdoor, int doorcount,
 							switch (testdoor.direction)
 								{
 								case 0:
-									if (((testdoor.y + 1 >= roomsizetab[j].ymin
-												&& testdoor.y + 1 <= roomsizetab[j].ymax)
-											 || (testdoor.y + 5 >= roomsizetab[j].ymin
-													 && testdoor.y + 5 <= roomsizetab[j].ymax))
+									if (((testdoor.y + 1 >= roomsizetab[j].y_min
+												&& testdoor.y + 1 <= roomsizetab[j].y_max)
+											 || (testdoor.y + 5 >= roomsizetab[j].y_min
+													 && testdoor.y + 5 <= roomsizetab[j].y_max))
 											&&
-											((testdoor.x - 3 >= roomsizetab[j].xmin
-												&& testdoor.x - 3 <= roomsizetab[j].xmax)
-											 || (testdoor.x + 3 >= roomsizetab[j].xmin
-													 && testdoor.x + 3 <= roomsizetab[j].xmax)))
+											((testdoor.x - 3 >= roomsizetab[j].x_min
+												&& testdoor.x - 3 <= roomsizetab[j].x_max)
+											 || (testdoor.x + 3 >= roomsizetab[j].x_min
+													 && testdoor.x + 3 <= roomsizetab[j].x_max)))
 										{
 											return 0;
 										}
 									break;
 								case 1:
-									if (((testdoor.y - 3 >= roomsizetab[j].ymin
-												&& testdoor.y - 3 <= roomsizetab[j].ymax)
-											 || (testdoor.y + 3 >= roomsizetab[j].ymin
-													 && testdoor.y + 3 <= roomsizetab[j].ymax))
+									if (((testdoor.y - 3 >= roomsizetab[j].y_min
+												&& testdoor.y - 3 <= roomsizetab[j].y_max)
+											 || (testdoor.y + 3 >= roomsizetab[j].y_min
+													 && testdoor.y + 3 <= roomsizetab[j].y_max))
 											&&
-											((testdoor.x + 1 >= roomsizetab[j].xmin
-												&& testdoor.x + 1 <= roomsizetab[j].xmax)
-											 || (testdoor.x + 5 >= roomsizetab[j].xmin
-													 && testdoor.x + 5 <= roomsizetab[j].xmax)))
+											((testdoor.x + 1 >= roomsizetab[j].x_min
+												&& testdoor.x + 1 <= roomsizetab[j].x_max)
+											 || (testdoor.x + 5 >= roomsizetab[j].x_min
+													 && testdoor.x + 5 <= roomsizetab[j].x_max)))
 										{
 											return 0;
 										}
 									break;
 								case 2:
-									if (((testdoor.y - 1 >= roomsizetab[j].ymin
-												&& testdoor.y - 1 <= roomsizetab[j].ymax)
-											 || (testdoor.y - 5 >= roomsizetab[j].ymin
-													 && testdoor.y - 5 <= roomsizetab[j].ymax))
+									if (((testdoor.y - 1 >= roomsizetab[j].y_min
+												&& testdoor.y - 1 <= roomsizetab[j].y_max)
+											 || (testdoor.y - 5 >= roomsizetab[j].y_min
+													 && testdoor.y - 5 <= roomsizetab[j].y_max))
 											&&
-											((testdoor.x - 3 >= roomsizetab[j].xmin
-												&& testdoor.x - 3 <= roomsizetab[j].xmax)
-											 || (testdoor.x + 3 >= roomsizetab[j].xmin
-													 && testdoor.x + 3 <= roomsizetab[j].xmax)))
+											((testdoor.x - 3 >= roomsizetab[j].x_min
+												&& testdoor.x - 3 <= roomsizetab[j].x_max)
+											 || (testdoor.x + 3 >= roomsizetab[j].x_min
+													 && testdoor.x + 3 <= roomsizetab[j].x_max)))
 										{
 											return 0;
 										}
 									break;
 								case 3:
-									if (((testdoor.y - 3 >= roomsizetab[j].ymin
-												&& testdoor.y - 3 <= roomsizetab[j].ymax)
-											 || (testdoor.y + 3 >= roomsizetab[j].ymin
-													 && testdoor.y + 3 <= roomsizetab[j].ymax))
+									if (((testdoor.y - 3 >= roomsizetab[j].y_min
+												&& testdoor.y - 3 <= roomsizetab[j].y_max)
+											 || (testdoor.y + 3 >= roomsizetab[j].y_min
+													 && testdoor.y + 3 <= roomsizetab[j].y_max))
 											&&
-											((testdoor.x - 1 >= roomsizetab[j].xmin
-												&& testdoor.x - 1 <= roomsizetab[j].xmax)
-											 || (testdoor.x - 5 >= roomsizetab[j].xmin
-													 && testdoor.x - 5 <= roomsizetab[j].xmax)))
+											((testdoor.x - 1 >= roomsizetab[j].x_min
+												&& testdoor.x - 1 <= roomsizetab[j].x_max)
+											 || (testdoor.x - 5 >= roomsizetab[j].x_min
+													 && testdoor.x - 5 <= roomsizetab[j].x_max)))
 										{
 											return 0;
 										}
@@ -871,55 +870,55 @@ confirmdoororientation (room * roomsizetab, room newroom, int roomcount,
 {
 	for (int j = 0; j < 4; j++)
 		{
-			if (newroom.roomdoor[j] == 1 && (prevdoor.direction + 2) % 4 != j)
+			if (newroom.room_door[j] == 1 && (prevdoor.direction + 2) % 4 != j)
 				{
 					for (int i = 0; i < roomcount; i++)
 						{
 							switch (j)
 								{
 								case 0:
-									if ((newroom.ymax + 5 >= roomsizetab[i].ymin
-											 && newroom.ymax + 5 <= roomsizetab[i].ymax)
+									if ((newroom.y_max + 5 >= roomsizetab[i].y_min
+											 && newroom.y_max + 5 <= roomsizetab[i].y_max)
 											&&
-											((newroom.xmin >= roomsizetab[i].xmin
-												&& newroom.xmin <= roomsizetab[i].xmax)
-											 || (newroom.xmax >= roomsizetab[i].xmin
-													 && newroom.xmax <= roomsizetab[i].xmax)))
+											((newroom.x_min >= roomsizetab[i].x_min
+												&& newroom.x_min <= roomsizetab[i].x_max)
+											 || (newroom.x_max >= roomsizetab[i].x_min
+													 && newroom.x_max <= roomsizetab[i].x_max)))
 										{
 											return 0;
 										}
 									break;
 								case 1:
-									if (((newroom.ymin >= roomsizetab[i].ymin
-												&& newroom.ymin <= roomsizetab[i].ymax)
-											 || (newroom.ymax >= roomsizetab[i].ymin
-													 && newroom.ymax <= roomsizetab[i].ymax))
-											&& (newroom.xmax + 5 >= roomsizetab[i].xmin
-													&& newroom.xmax + 5 <= roomsizetab[i].xmax))
+									if (((newroom.y_min >= roomsizetab[i].y_min
+												&& newroom.y_min <= roomsizetab[i].y_max)
+											 || (newroom.y_max >= roomsizetab[i].y_min
+													 && newroom.y_max <= roomsizetab[i].y_max))
+											&& (newroom.x_max + 5 >= roomsizetab[i].x_min
+													&& newroom.x_max + 5 <= roomsizetab[i].x_max))
 										{
 											return 0;
 										}
 									break;
 								case 2:
-									if ((newroom.ymin - 5 >= roomsizetab[i].ymin
-											 && newroom.ymin - 5 <= roomsizetab[i].ymax)
+									if ((newroom.y_min - 5 >= roomsizetab[i].y_min
+											 && newroom.y_min - 5 <= roomsizetab[i].y_max)
 											&&
-											((newroom.xmin >= roomsizetab[i].xmin
-												&& newroom.xmin <= roomsizetab[i].xmax)
-											 || (newroom.xmax >= roomsizetab[i].xmin
-													 && newroom.xmax <= roomsizetab[i].xmax)))
+											((newroom.x_min >= roomsizetab[i].x_min
+												&& newroom.x_min <= roomsizetab[i].x_max)
+											 || (newroom.x_max >= roomsizetab[i].x_min
+													 && newroom.x_max <= roomsizetab[i].x_max)))
 										{
 											return 0;
 										}
 									break;
 								case 3:
-									if (((newroom.ymin >= roomsizetab[i].ymin
-												&& newroom.ymin <= roomsizetab[i].ymax)
-											 || (newroom.ymax >= roomsizetab[i].ymin
-													 && newroom.ymax <= roomsizetab[i].ymax))
+									if (((newroom.y_min >= roomsizetab[i].y_min
+												&& newroom.y_min <= roomsizetab[i].y_max)
+											 || (newroom.y_max >= roomsizetab[i].y_min
+													 && newroom.y_max <= roomsizetab[i].y_max))
 											&&
-											(newroom.xmin - 5 >= roomsizetab[i].xmin
-											 && newroom.xmin - 5 <= roomsizetab[i].xmax))
+											(newroom.x_min - 5 >= roomsizetab[i].x_min
+											 && newroom.x_min - 5 <= roomsizetab[i].x_max))
 										{
 											return 0;
 										}
@@ -949,22 +948,22 @@ adaptnextsizeroomfuse (room * newroom, int roomcount,
 							switch (tabdoor[i].direction)
 								{
 								case 1:
-									newroom->xmin = tabdoor[i].x + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_min = tabdoor[i].x + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->ymax = tabdoor[i].y - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_max = tabdoor[i].y - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->xmax = tabdoor[i].x - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_max = tabdoor[i].x - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								}
 							break;
@@ -972,22 +971,22 @@ adaptnextsizeroomfuse (room * newroom, int roomcount,
 							switch (tabdoor[i].direction)
 								{
 								case 0:
-									newroom->ymin = tabdoor[i].y + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_min = tabdoor[i].y + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->ymax = tabdoor[i].y - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_max = tabdoor[i].y - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->xmax = tabdoor[i].x - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_max = tabdoor[i].x - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								}
 							break;
@@ -995,22 +994,22 @@ adaptnextsizeroomfuse (room * newroom, int roomcount,
 							switch (tabdoor[i].direction)
 								{
 								case 0:
-									newroom->ymin = tabdoor[i].y + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_min = tabdoor[i].y + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 1:
-									newroom->xmin = tabdoor[i].x + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_min = tabdoor[i].x + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->xmax = tabdoor[i].x - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_max = tabdoor[i].x - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								}
 							break;
@@ -1018,22 +1017,22 @@ adaptnextsizeroomfuse (room * newroom, int roomcount,
 							switch (tabdoor[i].direction)
 								{
 								case 0:
-									newroom->ymin = tabdoor[i].y + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_min = tabdoor[i].y + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 1:
-									newroom->xmin = tabdoor[i].x + 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->x_min = tabdoor[i].x + 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->ymax = tabdoor[i].y - 1;
-									tabdoor[i].roomnum2 = roomcount;
+									newroom->y_max = tabdoor[i].y - 1;
+									tabdoor[i].roomNum2 = roomcount;
 									countdoor++;
-									newroom->roomdoor[((tabdoor[i].direction) + 2) % 4] = 1;
+									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
 									break;
 								}
 							break;
@@ -1050,27 +1049,27 @@ generateroom (int seed, int *maxroom, room * tabroom,
 {
 	room newroom;
 	int randtamp, directionindex, randtamp2, doornum = *doorcount;
-	prevdoor->roomnum2 = *roomcount;
-	newroom.numofdoor = 1;
+	prevdoor->roomNum2 = *roomcount;
+	newroom.num_door = 1;
 
 	for (int i = 0; i < 4; i++)
 		{
-			newroom.roomdoor[i] = -1;
+			newroom.room_door[i] = -1;
 		}
-	newroom.roomdoor[(prevdoor->direction + 2) % 4] = 1;
+	newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
 	for (int i = 0; i < *doorcount; i++)
 		{
 			if (searchreallyneardoor (tabdoor[i], *prevdoor) > 0)
 				{
-					newroom.numofdoor++;
+					newroom.num_door++;
 				}
 		}
-	if (newroom.numofdoor > 1)
+	if (newroom.num_door > 1)
 		{
-			newroom.xmax = 0;
-			newroom.xmin = 0;
-			newroom.ymax = 0;
-			newroom.ymin = 0;
+			newroom.x_max = 0;
+			newroom.x_min = 0;
+			newroom.y_max = 0;
+			newroom.y_min = 0;
 			adaptnextsizeroomfuse (&newroom, *roomcount, tabdoor,
 														 *prevdoor, *doorcount);
 			do
@@ -1078,63 +1077,63 @@ generateroom (int seed, int *maxroom, room * tabroom,
 					switch (prevdoor->direction)
 						{
 						case 0:
-							newroom.ymin = prevdoor->y + 1;
-							if (newroom.xmin == 0)
+							newroom.y_min = prevdoor->y + 1;
+							if (newroom.x_min == 0)
 								{
-									newroom.xmin = prevdoor->x - 5 + (rand () % 3);
+									newroom.x_min = prevdoor->x - 5 + (rand () % 3);
 								}
-							if (newroom.xmax == 0)
+							if (newroom.x_max == 0)
 								{
-									newroom.xmax = prevdoor->x + 5 - (rand () % 3);
+									newroom.x_max = prevdoor->x + 5 - (rand () % 3);
 								}
-							if (newroom.ymax == 0)
+							if (newroom.y_max == 0)
 								{
-									newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+									newroom.y_max = newroom.y_min + 4 + (rand () % 5);
 								}
 							break;
 						case 1:
-							newroom.xmin = prevdoor->x + 1;
-							if (newroom.xmax == 0)
+							newroom.x_min = prevdoor->x + 1;
+							if (newroom.x_max == 0)
 								{
-									newroom.xmax = newroom.xmin + 4 + (rand () % 5);
+									newroom.x_max = newroom.x_min + 4 + (rand () % 5);
 								}
-							if (newroom.ymin == 0)
+							if (newroom.y_min == 0)
 								{
-									newroom.ymin = prevdoor->y - 5 + (rand () % 3);
+									newroom.y_min = prevdoor->y - 5 + (rand () % 3);
 								}
-							if (newroom.ymax == 0)
+							if (newroom.y_max == 0)
 								{
-									newroom.ymax = prevdoor->y + 5 - (rand () % 3);
+									newroom.y_max = prevdoor->y + 5 - (rand () % 3);
 								}
 							break;
 						case 2:
-							newroom.ymax = prevdoor->y - 1;
-							if (newroom.xmin == 0)
+							newroom.y_max = prevdoor->y - 1;
+							if (newroom.x_min == 0)
 								{
-									newroom.xmin = prevdoor->x - 5 + (rand () % 3);
+									newroom.x_min = prevdoor->x - 5 + (rand () % 3);
 								}
-							if (newroom.xmax == 0)
+							if (newroom.x_max == 0)
 								{
-									newroom.xmax = prevdoor->x + 5 - (rand () % 3);
+									newroom.x_max = prevdoor->x + 5 - (rand () % 3);
 								}
-							if (newroom.ymin == 0)
+							if (newroom.y_min == 0)
 								{
-									newroom.ymin = newroom.ymax - 4 - (rand () % 5);
+									newroom.y_min = newroom.y_max - 4 - (rand () % 5);
 								}
 							break;
 						case 3:
-							newroom.xmax = prevdoor->x - 1;
-							if (newroom.xmin == 0)
+							newroom.x_max = prevdoor->x - 1;
+							if (newroom.x_min == 0)
 								{
-									newroom.xmin = newroom.xmax - 4 - (rand () % 5);
+									newroom.x_min = newroom.x_max - 4 - (rand () % 5);
 								}
-							if (newroom.ymin == 0)
+							if (newroom.y_min == 0)
 								{
-									newroom.ymin = prevdoor->y - 5 + (rand () % 3);
+									newroom.y_min = prevdoor->y - 5 + (rand () % 3);
 								}
-							if (newroom.ymax == 0)
+							if (newroom.y_max == 0)
 								{
-									newroom.ymax = prevdoor->y + 5 - (rand () % 3);
+									newroom.y_max = prevdoor->y + 5 - (rand () % 3);
 								}
 							break;
 						}
@@ -1150,44 +1149,44 @@ generateroom (int seed, int *maxroom, room * tabroom,
 					switch (prevdoor->direction)
 						{
 						case 0:
-							newroom.xmin = prevdoor->x - 3 + (rand () % 2);
-							newroom.xmax = newroom.xmin + 3 + (rand () % 4);
-							newroom.ymin = prevdoor->y + 1;
-							newroom.ymax = newroom.ymin + 3 + (rand () % 4);
+							newroom.x_min = prevdoor->x - 3 + (rand () % 2);
+							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
+							newroom.y_min = prevdoor->y + 1;
+							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
 							break;
 						case 1:
-							newroom.xmin = prevdoor->x + 1;
-							newroom.xmax = newroom.xmin + 3 + (rand () % 4);
-							newroom.ymin = prevdoor->y - 3 + (rand () % 2);
-							newroom.ymax = newroom.ymin + 3 + (rand () % 4);
+							newroom.x_min = prevdoor->x + 1;
+							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
+							newroom.y_min = prevdoor->y - 3 + (rand () % 2);
+							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
 							break;
 						case 2:
-							newroom.xmin = prevdoor->x - 3 + (rand () % 2);
-							newroom.xmax = newroom.xmin + 3 + (rand () % 4);
-							newroom.ymax = prevdoor->y - 1;
-							newroom.ymin = newroom.ymax - 3 - (rand () % 4);
+							newroom.x_min = prevdoor->x - 3 + (rand () % 2);
+							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
+							newroom.y_max = prevdoor->y - 1;
+							newroom.y_min = newroom.y_max - 3 - (rand () % 4);
 							break;
 						case 3:
-							newroom.xmax = prevdoor->x - 1;
-							newroom.xmin = newroom.xmax - 3 - (rand () % 4);
-							newroom.ymin = prevdoor->y - 3 + (rand () % 2);
-							newroom.ymax = newroom.ymin + 3 + (rand () % 4);
+							newroom.x_max = prevdoor->x - 1;
+							newroom.x_min = newroom.x_max - 3 - (rand () % 4);
+							newroom.y_min = prevdoor->y - 3 + (rand () % 2);
+							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
 							break;
 						}
 				}
 			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
 			do
 				{
-					newroom.numofdoor = rand () % 3 + 1;
+					newroom.num_door = rand () % 3 + 1;
 					for (int i = 0; i < 4; i++)
 						{
-							newroom.roomdoor[i] = -1;
+							newroom.room_door[i] = -1;
 						}
-					newroom.roomdoor[(prevdoor->direction + 2) % 4] = 1;
-					while (newroom.numofdoor > MAXROOM - *roomcount)
+					newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
+					while (newroom.num_door > MAX_ROOM - *roomcount)
 						{
-							newroom.numofdoor--;
-							switch (newroom.numofdoor)
+							newroom.num_door--;
+							switch (newroom.num_door)
 								{
 								case 2:
 									randtamp = rand () % 4;
@@ -1195,7 +1194,7 @@ generateroom (int seed, int *maxroom, room * tabroom,
 										{
 											randtamp = (randtamp + 1) % 4;
 										}
-									newroom.roomdoor[randtamp] = 1;
+									newroom.room_door[randtamp] = 1;
 									break;
 								case 3:
 									randtamp = rand () % 4;
@@ -1203,7 +1202,7 @@ generateroom (int seed, int *maxroom, room * tabroom,
 										{
 											randtamp = (randtamp + 1) % 4;
 										}
-									newroom.roomdoor[randtamp] = 1;
+									newroom.room_door[randtamp] = 1;
 									randtamp2 = rand () % 4;
 									do
 										{
@@ -1212,18 +1211,18 @@ generateroom (int seed, int *maxroom, room * tabroom,
 									while (randtamp2 !=
 												 (prevdoor->direction + 2) % 4
 												 && randtamp2 != randtamp);
-									newroom.roomdoor[randtamp2] = 1;
+									newroom.room_door[randtamp2] = 1;
 									break;
 								}
 						}
 				}
 			while (confirmdoororientation (tabroom, newroom, *roomcount, *prevdoor)
 						 == 0);
-			for (int i = *doorcount; i < doornum + newroom.numofdoor - 1; i++)
+			for (int i = *doorcount; i < doornum + newroom.num_door - 1; i++)
 				{
-					tabdoor[i].roomnum1 = *roomcount;
-					tabdoor[i].roomnum2 = -1;
-					while (newroom.roomdoor[directionindex] != 1
+					tabdoor[i].roomNum1 = *roomcount;
+					tabdoor[i].roomNum2 = -1;
+					while (newroom.room_door[directionindex] != 1
 								 || directionindex == ((prevdoor->direction) + 2) % 4)
 						{
 							directionindex = (directionindex + 1) % 4;
@@ -1233,33 +1232,33 @@ generateroom (int seed, int *maxroom, room * tabroom,
 						{
 							for (int i = 0; i < 4; i++)
 								{
-									newroom.roomdoor[i] = -1;
+									newroom.room_door[i] = -1;
 								}
 							switch (tabdoor[i].direction)
 								{
 								case 0:
 									tabdoor[i].x =
-										newroom.xmin + 1 +
-										(rand () % (newroom.xmax - newroom.xmin - 1));
-									tabdoor[i].y = newroom.ymax + 1;
+                                            newroom.x_min + 1 +
+                                            (rand () % (newroom.x_max - newroom.x_min - 1));
+									tabdoor[i].y = newroom.y_max + 1;
 									break;
 								case 1:
-									tabdoor[i].x = newroom.xmax + 1;
+									tabdoor[i].x = newroom.x_max + 1;
 									tabdoor[i].y =
-										newroom.ymin + 1 +
-										(rand () % (newroom.ymax - newroom.ymin - 1));
+                                            newroom.y_min + 1 +
+                                            (rand () % (newroom.y_max - newroom.y_min - 1));
 									break;
 								case 2:
 									tabdoor[i].x =
-										newroom.xmin + 1 +
-										(rand () % (newroom.xmax - newroom.xmin - 1));
-									tabdoor[i].y = newroom.ymin - 1;
+                                            newroom.x_min + 1 +
+                                            (rand () % (newroom.x_max - newroom.x_min - 1));
+									tabdoor[i].y = newroom.y_min - 1;
 									break;
 								case 3:
-									tabdoor[i].x = newroom.xmin - 1;
+									tabdoor[i].x = newroom.x_min - 1;
 									tabdoor[i].y =
-										newroom.ymin + 1 +
-										(rand () % (newroom.ymax - newroom.ymin - 1));
+                                            newroom.y_min + 1 +
+                                            (rand () % (newroom.y_max - newroom.y_min - 1));
 									break;
 								}
 						}
@@ -1275,28 +1274,28 @@ generateroom (int seed, int *maxroom, room * tabroom,
 			switch (prevdoor->direction)
 				{
 				case 0:
-					newroom.xmin = prevdoor->x - 4 + (rand () % 3);
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
-					newroom.ymin = prevdoor->y + 1;
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.x_min = prevdoor->x - 4 + (rand () % 3);
+					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
+					newroom.y_min = prevdoor->y + 1;
+					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
 					break;
 				case 1:
-					newroom.xmin = prevdoor->x + 1;
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
-					newroom.ymin = prevdoor->y - 4 + (rand () % 3);
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.x_min = prevdoor->x + 1;
+					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
+					newroom.y_min = prevdoor->y - 4 + (rand () % 3);
+					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
 					break;
 				case 2:
-					newroom.xmin = prevdoor->x - 4 + (rand () % 3);
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
-					newroom.ymax = prevdoor->y - 1;
-					newroom.ymin = newroom.ymax - 4 - (rand () % 5);
+					newroom.x_min = prevdoor->x - 4 + (rand () % 3);
+					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
+					newroom.y_max = prevdoor->y - 1;
+					newroom.y_min = newroom.y_max - 4 - (rand () % 5);
 					break;
 				case 3:
-					newroom.xmax = prevdoor->x - 1;
-					newroom.xmin = newroom.xmax - 4 - (rand () % 5);
-					newroom.ymin = prevdoor->y - 4 + (rand () % 3);
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.x_max = prevdoor->x - 1;
+					newroom.x_min = newroom.x_max - 4 - (rand () % 5);
+					newroom.y_min = prevdoor->y - 4 + (rand () % 3);
+					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
 					break;
 				}
 			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
@@ -1304,15 +1303,15 @@ generateroom (int seed, int *maxroom, room * tabroom,
 				{
 					for (int i = 0; i < 4; i++)
 						{
-							newroom.roomdoor[i] = -1;
+							newroom.room_door[i] = -1;
 						}
-					newroom.roomdoor[(prevdoor->direction + 2) % 4] = 1;
-					newroom.numofdoor = rand () % 3 + 2;
-					while (newroom.numofdoor > MAXROOM - *roomcount)
+					newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
+					newroom.num_door = rand () % 3 + 2;
+					while (newroom.num_door > MAX_ROOM - *roomcount)
 						{
-							newroom.numofdoor--;
+							newroom.num_door--;
 						}
-					switch (newroom.numofdoor)
+					switch (newroom.num_door)
 						{
 						case 2:
 							randtamp = rand () % 4;
@@ -1320,7 +1319,7 @@ generateroom (int seed, int *maxroom, room * tabroom,
 								{
 									randtamp = (randtamp + 1) % 4;
 								}
-							newroom.roomdoor[randtamp] = 1;
+							newroom.room_door[randtamp] = 1;
 							break;
 						case 3:
 							randtamp = rand () % 4;
@@ -1328,7 +1327,7 @@ generateroom (int seed, int *maxroom, room * tabroom,
 								{
 									randtamp = (randtamp + 1) % 4;
 								}
-							newroom.roomdoor[randtamp] = 1;
+							newroom.room_door[randtamp] = 1;
 							randtamp2 = rand () % 4;
 							do
 								{
@@ -1336,22 +1335,22 @@ generateroom (int seed, int *maxroom, room * tabroom,
 								}
 							while (randtamp2 ==
 										 (prevdoor->direction + 2) % 4 || randtamp2 == randtamp);
-							newroom.roomdoor[randtamp2] = 1;
+							newroom.room_door[randtamp2] = 1;
 							break;
 						case 4:
 							for (int i = 0; i < 4; i++)
 								{
-									newroom.roomdoor[i] = 1;
+									newroom.room_door[i] = 1;
 								}
 						}
 				}
 			while (confirmdoororientation (tabroom, newroom, *roomcount, *prevdoor)
 						 == 0);
-			for (int i = *doorcount; i < doornum + newroom.numofdoor - 1; i++)
+			for (int i = *doorcount; i < doornum + newroom.num_door - 1; i++)
 				{
-					tabdoor[i].roomnum1 = *roomcount;
-					tabdoor[i].roomnum2 = -1;
-					while (newroom.roomdoor[directionindex] != 1
+					tabdoor[i].roomNum1 = *roomcount;
+					tabdoor[i].roomNum2 = -1;
+					while (newroom.room_door[directionindex] != 1
 								 || directionindex == ((prevdoor->direction) + 2) % 4)
 						{
 							directionindex = (directionindex + 1) % 4;
@@ -1363,27 +1362,27 @@ generateroom (int seed, int *maxroom, room * tabroom,
 								{
 								case 0:
 									tabdoor[i].x =
-										newroom.xmin + 1 +
-										(rand () % (newroom.xmax - newroom.xmin - 1));
-									tabdoor[i].y = newroom.ymax + 1;
+                                            newroom.x_min + 1 +
+                                            (rand () % (newroom.x_max - newroom.x_min - 1));
+									tabdoor[i].y = newroom.y_max + 1;
 									break;
 								case 1:
-									tabdoor[i].x = newroom.xmax + 1;
+									tabdoor[i].x = newroom.x_max + 1;
 									tabdoor[i].y =
-										newroom.ymin + 1 +
-										(rand () % (newroom.ymax - newroom.ymin - 1));
+                                            newroom.y_min + 1 +
+                                            (rand () % (newroom.y_max - newroom.y_min - 1));
 									break;
 								case 2:
 									tabdoor[i].x =
-										newroom.xmin + 1 +
-										(rand () % (newroom.xmax - newroom.xmin - 1));
-									tabdoor[i].y = newroom.ymin - 1;
+                                            newroom.x_min + 1 +
+                                            (rand () % (newroom.x_max - newroom.x_min - 1));
+									tabdoor[i].y = newroom.y_min - 1;
 									break;
 								case 3:
-									tabdoor[i].x = newroom.xmin - 1;
+									tabdoor[i].x = newroom.x_min - 1;
 									tabdoor[i].y =
-										newroom.ymin + 1 +
-										(rand () % (newroom.ymax - newroom.ymin - 1));
+                                            newroom.y_min + 1 +
+                                            (rand () % (newroom.y_max - newroom.y_min - 1));
 									break;
 								}
 						}
@@ -1404,13 +1403,13 @@ createmainroom ()
 	room froom;
 	for (int j = 0; j < 4; j++)
 		{
-			froom.roomdoor[j] = 1;
+			froom.room_door[j] = 1;
 		}
-	froom.numofdoor = 4;
-	froom.xmin = 1 * -4;
-	froom.xmax = 1 * 5;
-	froom.ymin = 1 * -4;
-	froom.ymax = 1 * 5;
+	froom.num_door = 4;
+	froom.x_min = 1 * -4;
+	froom.x_max = 1 * 5;
+	froom.y_min = 1 * -4;
+	froom.y_max = 1 * 5;
 
 	return froom;
 }
@@ -1420,29 +1419,29 @@ createmaindoor (door * tabdoor)
 {
 	tabdoor[0].x = 0;
 	tabdoor[0].y = 6;
-	tabdoor[0].roomnum1 = 0;
-	tabdoor[0].roomnum2 = -1;
+	tabdoor[0].roomNum1 = 0;
+	tabdoor[0].roomNum2 = -1;
 	tabdoor[0].direction = 0;
 	tabdoor[1].x = 6;
 	tabdoor[1].y = 0;
-	tabdoor[1].roomnum1 = 0;
-	tabdoor[1].roomnum2 = -1;
+	tabdoor[1].roomNum1 = 0;
+	tabdoor[1].roomNum2 = -1;
 	tabdoor[1].direction = 1;
 	tabdoor[2].x = 0;
 	tabdoor[2].y = -5;
-	tabdoor[2].roomnum1 = 0;
-	tabdoor[2].roomnum2 = -1;
+	tabdoor[2].roomNum1 = 0;
+	tabdoor[2].roomNum2 = -1;
 	tabdoor[2].direction = 2;
 	tabdoor[3].x = -5;
 	tabdoor[3].y = 0;
-	tabdoor[3].roomnum1 = 0;
-	tabdoor[3].roomnum2 = -1;
+	tabdoor[3].roomNum1 = 0;
+	tabdoor[3].roomNum2 = -1;
 	tabdoor[3].direction = 3;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //enemy fonction
-double calculateDistance(position pos1, position pos2) {
+double calculateDistance(Position pos1, Position pos2) {
     int dx = pos2.x - pos1.x;
     int dy = pos2.y - pos1.y;
     return sqrt(dx*dx + dy*dy);
@@ -1565,43 +1564,43 @@ void mobOrientation(Enemy* a, hero* player){
 void moveMob(Enemy* a, hero* player, room* b){
     int x = 0;
     int y = 0;
-    printf("hero position : %d %d\n", player->coordinates.x, player->coordinates.y);
+    printf("hero Position : %d %d\n", player->coordinates.x, player->coordinates.y);
     switch (a->type) {
         case ALL_IN:
             while (checkRange(a, player)) {
                 if (player->coordinates.x + 1 > (a->coordinates.x + a->range)) {
-                    if (a->coordinates.x < b->xmax){
+                    if (a->coordinates.x < b->x_max){
                         a->coordinates.x += 1;
                     }
                 } else if (player->coordinates.x + 1 < (a->coordinates.x - a->range)) {
-                    if (a->coordinates.x > b->xmin){
+                    if (a->coordinates.x > b->x_min){
                         a->coordinates.x -= 1;
                     }
                 }
                 if (player->coordinates.y + 1 > (a->coordinates.y + a->range)) {
-                    if (a->coordinates.y < b->ymax){
+                    if (a->coordinates.y < b->y_max){
                         a->coordinates.y += 1;
                     }
                 } else if (player->coordinates.y + 1 < (a->coordinates.y - a->range)) {
-                    if (a->coordinates.y > b->ymin){
+                    if (a->coordinates.y > b->y_min){
                         a->coordinates.y -= 1;
                     }
                 }
-                printf("enemy position : %d %d\n", a->coordinates.x, a->coordinates.y);
+                printf("enemy Position : %d %d\n", a->coordinates.x, a->coordinates.y);
             }
         case FLYING:
             while (checkRange(a, player)) {
-                if ((a->coordinates.x + a->range) < player->coordinates.x + 1 && a->coordinates.x < b->xmax) {
+                if ((a->coordinates.x + a->range) < player->coordinates.x + 1 && a->coordinates.x < b->x_max) {
                     a->coordinates.x += 1;
-                } else if ((a->coordinates.x - a->range) > player->coordinates.x + 1 && a->coordinates.x > b->xmin) {
+                } else if ((a->coordinates.x - a->range) > player->coordinates.x + 1 && a->coordinates.x > b->x_min) {
                     a->coordinates.x -= 1;
                 }
-                if ((a->coordinates.y + a->range) < player->coordinates.y + 1 && a->coordinates.y < b->ymax) {
+                if ((a->coordinates.y + a->range) < player->coordinates.y + 1 && a->coordinates.y < b->y_max) {
                     a->coordinates.y += 1;
-                } else if ((a->coordinates.y - a->range) > player->coordinates.y + 1 && a->coordinates.y > b->ymin) {
+                } else if ((a->coordinates.y - a->range) > player->coordinates.y + 1 && a->coordinates.y > b->y_min) {
                     a->coordinates.y -= 1;
                 }
-                printf("enemy position : %d %d\n", a->coordinates.x, a->coordinates.y);
+                printf("enemy Position : %d %d\n", a->coordinates.x, a->coordinates.y);
             }
         case RANGE:
             break;
@@ -1642,8 +1641,8 @@ void enemySpawn(int number, room* b, int* seed){
                 exit(5);
         }
         b->tab_enemy[i] = defEnemy(a);
-        b->tab_enemy[i].coordinates.x =  rand() % (b->xmax - b->xmin) + b->xmin;
-        b->tab_enemy[i].coordinates.y =  rand() % (b->ymax - b->ymin) + b->ymin;
+        b->tab_enemy[i].coordinates.x =  rand() % (b->x_max - b->x_min) + b->x_min;
+        b->tab_enemy[i].coordinates.y =  rand() % (b->y_max - b->y_min) + b->y_min;
         //*seed+=2;
     }
 }
@@ -1656,20 +1655,20 @@ void stuffSpawn(room* a, FILE* Object, FILE* Blade, FILE* Armor, int* seed){
 
     for (int i=0; i<a->nbr_object ; i++){
         a->tab_object[i] = search_object(rand()%14,Object);
-        a->tab_object[i].coordinates.x = rand() % (a->xmax - a->xmin) + a->xmin;
-        a->tab_object[i].coordinates.y = rand() % (a->ymax - a->ymin) + a->ymin;
+        a->tab_object[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
+        a->tab_object[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
 
     for (int i=0; i<a->nbr_blade ; i++){
         a->tab_blade[i] = search_blade(rand()%7,Blade);
-        a->tab_blade[i].coordinates.x = rand() % (a->xmax - a->xmin) + a->xmin;
-        a->tab_blade[i].coordinates.y = rand() % (a->ymax - a->ymin) + a->ymin;
+        a->tab_blade[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
+        a->tab_blade[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
 
     for (int i=0; i<a->nbr_armor ; i++){
         a->tab_armor[i] = search_stuff(rand()%6,Armor);
-        a->tab_armor[i].coordinates.x = rand() % (a->xmax - a->xmin) + a->xmin;
-        a->tab_armor[i].coordinates.y = rand() % (a->ymax - a->ymin) + a->ymin;
+        a->tab_armor[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
+        a->tab_armor[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
     //*seed+=3;
     }
@@ -1834,10 +1833,10 @@ void display_donjon(int screen_length,int screen_width,hero player,int doorcount
     //display room
     for(int i=0;i<roomcount;i++){
         //display room background
-        for(int j=0;j<=absolute_value(tabroom[i].ymax-tabroom[i].ymin);j++){
-            for(int k=0;k<=absolute_value(tabroom[i].xmax-tabroom[i].xmin);k++){
-                local_x=player.coordinates.x-tabroom[i].xmax+k;
-                local_y=-(player.coordinates.y-tabroom[i].ymax+j);
+        for(int j=0;j<=absolute_value(tabroom[i].y_max - tabroom[i].y_min); j++){
+            for(int k=0;k<=absolute_value(tabroom[i].x_max - tabroom[i].x_min); k++){
+                local_x= player.coordinates.x - tabroom[i].x_max + k;
+                local_y=-(player.coordinates.y - tabroom[i].y_max + j);
                 if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
                     attron(COLOR_PAIR(10));
                     mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x," ");
@@ -2043,7 +2042,7 @@ int main(void){
     init_color(COLOR_PINK, 1000, 375, 500);
     init_color(COLOR_BROWN, 300, 200, 0);
     init_color(COLOR_BEIGE,250, 200, 100);
-    init_color(COLOR_BEIGEclair,300, 200, 100);
+    init_color(COLOR_BEIGE_LIGHT, 300, 200, 100);
     
     //background menu
     init_pair(1,COLOR_WHITE,COLOR_BLUE);
@@ -2060,13 +2059,13 @@ int main(void){
     //time out
     init_pair(7,COLOR_RED,COLOR_BEIGE);
     //inventory background
-    init_pair(8,COLOR_WHITE,COLOR_BEIGEclair);
+    init_pair(8, COLOR_WHITE, COLOR_BEIGE_LIGHT);
     //inventory select
     init_pair(9,COLOR_WHITE,COLOR_RED);
 
 //change color
     //room background
-    init_pair(10,COLOR_WHITE,COLOR_BEIGEclair);
+    init_pair(10, COLOR_WHITE, COLOR_BEIGE_LIGHT);
     //ennemy
     init_pair(11,COLOR_WHITE,COLOR_RED);
     //object
@@ -2105,12 +2104,12 @@ int main(void){
     // ...
     
     //init room
-    int maxroom= MAXROOM;
+    int maxroom= MAX_ROOM;
     int roomcount= 0;
     int doorcount=0;
     room *tabroom;
     door *tabdoor;
-    tabdoor = malloc(sizeof(door) * MAXROOM * 4);
+    tabdoor = malloc(sizeof(door) * MAX_ROOM * 4);
     if (tabdoor == NULL) {
         exit(1);
         }
@@ -2301,7 +2300,7 @@ int main(void){
 
                             //Load room
                             for(int i=0;i<roomcount;i++){
-                                verif=fscanf(fichier,"%d %d %d %d %d",&tabroom[i].xmin, &tabroom[i].xmax, &tabroom[i].ymin, &tabroom[i].ymax, &tabroom[i].nbr_enemy);
+                                verif=fscanf(fichier, "%d %d %d %d %d", &tabroom[i].x_min, &tabroom[i].x_max, &tabroom[i].y_min, &tabroom[i].y_max, &tabroom[i].nbr_enemy);
                                 if(verif==EOF){
                                     printf("error load charging");
                                     exit(3);
@@ -2332,13 +2331,10 @@ int main(void){
                                         case 4:
                                             tabroom[i].tab_enemy[j].name= ROBOT;
                                             break;
-                                       case 5:
-                                            tabroom[i].tab_enemy[j].name= MECA_OCTOPUS;
-                                            break;
-                                        case 6:
+                                        case 5:
                                             tabroom[i].tab_enemy[j].name= BLOB;
                                             break;
-                                        case 7:
+                                        case 6:
                                             tabroom[i].tab_enemy[j].name= TURRET;
                                             break; 
                                         }
@@ -2427,7 +2423,7 @@ int main(void){
                                 }
                             //Load door
                             for(int i=0;i<doorcount;i++){
-                                verif=fscanf(fichier,"%d %d %d %d %d",&tabdoor[i].x, &tabdoor[i].y, &tabdoor[i].roomnum1, &tabdoor[i].roomnum2, &tabdoor[i].direction);
+                                verif=fscanf(fichier, "%d %d %d %d %d", &tabdoor[i].x, &tabdoor[i].y, &tabdoor[i].roomNum1, &tabdoor[i].roomNum2, &tabdoor[i].direction);
                                 if(verif==EOF){
                                     printf("error load charging");
                                     exit(3);
@@ -2499,13 +2495,13 @@ int main(void){
                 else if (test1==moove_up){
                     player.orientation=0;
                     //moove into door
-                    if(player.coordinates.y==tabroom[player.room].ymax){
+                    if(player.coordinates.y==tabroom[player.room].y_max){
                         for(int i=0;i<doorcount;i++){
                             if(tabdoor[i].x==player.coordinates.x && tabdoor[i].y-1==player.coordinates.y){
                                 player.coordinates.y+=2;
-                                if(tabdoor[i].roomnum2==-1){
+                                if(tabdoor[i].roomNum2 == -1){
                                     //générer room
-                                    tabroom[roomcount]=generateroom(&seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
+                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
                                     
                                     //générer mobs armor blade   
                                     tabroom[roomcount-1].nbr_enemy=rand()%5;
@@ -2517,11 +2513,11 @@ int main(void){
                                     enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
                                     stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
                                     }
-                                if(player.room==tabdoor[i].roomnum1){
-                                    player.room=tabdoor[i].roomnum2;
+                                if(player.room==tabdoor[i].roomNum1){
+                                    player.room=tabdoor[i].roomNum2;
                                     }
                                 else{
-                                    player.room=tabdoor[i].roomnum1;
+                                    player.room=tabdoor[i].roomNum1;
                                     }
                                 }
                             }
@@ -2534,13 +2530,13 @@ int main(void){
                 else if (test1==moove_down){
                     player.orientation=2;
                     //moove into door
-                    if(player.coordinates.y==tabroom[player.room].ymin){
+                    if(player.coordinates.y==tabroom[player.room].y_min){
                         for(int i=0;i<doorcount;i++){
                             if(tabdoor[i].x==player.coordinates.x && tabdoor[i].y+1==player.coordinates.y){
                                 player.coordinates.y-=2;
-                                if(tabdoor[i].roomnum2==-1){
+                                if(tabdoor[i].roomNum2 == -1){
                                     //générer room
-                                    tabroom[roomcount]=generateroom(&seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
+                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
                                     
                                     //générer mobs armor blade    
                                     tabroom[roomcount-1].nbr_enemy=rand()%5;
@@ -2552,11 +2548,11 @@ int main(void){
                                     enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
                                     stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
                                     }
-                                if(player.room==tabdoor[i].roomnum1){
-                                    player.room=tabdoor[i].roomnum2;
+                                if(player.room==tabdoor[i].roomNum1){
+                                    player.room=tabdoor[i].roomNum2;
                                     }
                                 else{
-                                    player.room=tabdoor[i].roomnum1;
+                                    player.room=tabdoor[i].roomNum1;
                                     }
                                 }
                             }
@@ -2569,13 +2565,13 @@ int main(void){
                 else if (test1==moove_left){
                     player.orientation=3;
                     //moove into door
-                    if(player.coordinates.x==tabroom[player.room].xmin){
+                    if(player.coordinates.x==tabroom[player.room].x_min){
                         for(int i=0;i<doorcount;i++){
                             if(tabdoor[i].y==player.coordinates.y && tabdoor[i].x+1==player.coordinates.x){
                                 player.coordinates.x-=2;
-                                if(tabdoor[i].roomnum2==-1){
+                                if(tabdoor[i].roomNum2 == -1){
                                     //générer room
-                                    tabroom[roomcount]=generateroom(&seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
+                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
                                     
                                     //générer mobs armor 
                                     tabroom[roomcount-1].nbr_enemy=rand()%5;
@@ -2588,11 +2584,11 @@ int main(void){
                                     enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
                                     stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
                                     }
-                                if(player.room==tabdoor[i].roomnum1){   
-                                    player.room=tabdoor[i].roomnum2;
+                                if(player.room==tabdoor[i].roomNum1){
+                                    player.room=tabdoor[i].roomNum2;
                                     }
                                 else{
-                                    player.room=tabdoor[i].roomnum1;
+                                    player.room=tabdoor[i].roomNum1;
                                     }
                                 }
                             }
@@ -2605,13 +2601,13 @@ int main(void){
                 if (test1==moove_right){
                     player.orientation=1;
                     //moove into door
-                    if(player.coordinates.x==tabroom[player.room].xmax){
+                    if(player.coordinates.x==tabroom[player.room].x_max){
                         for(int i=0;i<doorcount;i++){
                             if(tabdoor[i].y==player.coordinates.y && tabdoor[i].x-1==player.coordinates.x){
                                 player.coordinates.x+=2;
-                                if(tabdoor[i].roomnum2==-1){
+                                if(tabdoor[i].roomNum2 == -1){
                                     //générer room
-                                    tabroom[roomcount]=generateroom(&seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
+                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
 
                                     //générer mobs armor blade
                                     /*
@@ -2631,11 +2627,11 @@ int main(void){
                                     enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
                                     stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff,&seed);
                                     }
-                                if(player.room==tabdoor[i].roomnum1){
-                                    player.room=tabdoor[i].roomnum2;
+                                if(player.room==tabdoor[i].roomNum1){
+                                    player.room=tabdoor[i].roomNum2;
                                     }
                                 else{
-                                    player.room=tabdoor[i].roomnum1;
+                                    player.room=tabdoor[i].roomNum1;
                                     }
                                 }
                             }
@@ -2739,7 +2735,7 @@ int main(void){
 
                     //save room
                     for(int i=0;i<roomcount;i++){
-                        verif2=fprintf(fichier,"%d %d %d %d %d ",tabroom[i].xmin, tabroom[i].xmax, tabroom[i].ymin, tabroom[i].ymax, tabroom[i].nbr_enemy);
+                        verif2=fprintf(fichier, "%d %d %d %d %d ", tabroom[i].x_min, tabroom[i].x_max, tabroom[i].y_min, tabroom[i].y_max, tabroom[i].nbr_enemy);
                         if(verif2==EOF){
                             printf("error load charging");
                             exit(3);
@@ -2771,13 +2767,6 @@ int main(void){
                                     break;
                                 case ROBOT:
                                     verif2=fprintf(fichier,"4 ");
-                                    if(verif2==EOF){
-                                        printf("error load charging");
-                                        exit(3);
-                                        }
-                                    break;
-                                case MECA_OCTOPUS:
-                                    verif2=fprintf(fichier,"5 ");
                                     if(verif2==EOF){
                                         printf("error load charging");
                                         exit(3);
@@ -2874,7 +2863,7 @@ int main(void){
                         }
                     //save door
                     for(int i=0;i<doorcount;i++){
-                        verif2=fprintf(fichier,"%d %d %d %d %d ",tabdoor[i].x, tabdoor[i].y, tabdoor[i].roomnum1, tabdoor[i].roomnum2, tabdoor[i].direction);
+                        verif2=fprintf(fichier, "%d %d %d %d %d ", tabdoor[i].x, tabdoor[i].y, tabdoor[i].roomNum1, tabdoor[i].roomNum2, tabdoor[i].direction);
                         if(verif2==EOF){
                             printf("error load charging");
                             exit(3);
