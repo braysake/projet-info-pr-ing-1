@@ -35,36 +35,60 @@ searchneardoor (Door * tabdoor, Door testdoor, int doorcount)
 					if (tabdoor[i].x >= (testdoor.x) - 6
 							&& tabdoor[i].x <= (testdoor.x) + 6
 							&& tabdoor[i].y >= (testdoor.y) + 1
-							&& tabdoor[i].y <= (testdoor.y) + 9)
+							&& tabdoor[i].y <= (testdoor.y) + 9
+						&& tabdoor[i].direction != testdoor.direction)
 						{
-							return 1;
+							if (tabdoor[i].roomnum1 != testdoor.roomnum1
+									&& tabdoor[i].roomnum2 != testdoor.roomnum1
+									&& tabdoor[i].direction != testdoor.direction)
+								{
+									return 1;
+								}
 						}
 					break;
 				case 1:
 					if (tabdoor[i].y >= (testdoor.y) - 6
 							&& tabdoor[i].y <= (testdoor.y) + 6
 							&& tabdoor[i].x >= (testdoor.x) + 1
-							&& tabdoor[i].x <= (testdoor.x) + 9)
+							&& tabdoor[i].x <= (testdoor.x) + 9
+						&&tabdoor[i].direction != testdoor.direction)
 						{
-							return 1;
+							if (tabdoor[i].roomnum1 != testdoor.roomnum1
+									&& tabdoor[i].roomnum2 != testdoor.roomnum1
+									&& tabdoor[i].direction != testdoor.direction)
+								{
+									return 1;
+								}
 						}
 					break;
 				case 2:
 					if (tabdoor[i].x >= (testdoor.x) - 6
 							&& tabdoor[i].x <= (testdoor.x) + 6
 							&& tabdoor[i].y <= (testdoor.y) - 1
-							&& tabdoor[i].y >= (testdoor.y) - 9)
+							&& tabdoor[i].y >= (testdoor.y) - 9
+						&& tabdoor[i].direction != testdoor.direction)
 						{
-							return 1;
+							if (tabdoor[i].roomnum1 != testdoor.roomnum1
+									&& tabdoor[i].roomnum2 != testdoor.roomnum1
+									&& tabdoor[i].direction != testdoor.direction)
+								{
+									return 1;
+								}
 						}
 					break;
 				case 3:
 					if (tabdoor[i].y >= (testdoor.y) - 6
 							&& tabdoor[i].y <= (testdoor.y) + 6
 							&& tabdoor[i].x <= (testdoor.x) - 1
-							&& tabdoor[i].x >= (testdoor.x) - 9)
+							&& tabdoor[i].x >= (testdoor.x) - 9
+						&& tabdoor[i].direction != testdoor.direction)
 						{
-							return 1;
+							if (tabdoor[i].roomnum1 != testdoor.roomnum1
+									&& tabdoor[i].roomnum2 != testdoor.roomnum1
+									&& tabdoor[i].direction != testdoor.direction)
+								{
+									return 1;
+								}
 						}
 					break;
 				}
@@ -74,8 +98,7 @@ searchneardoor (Door * tabdoor, Door testdoor, int doorcount)
 
 
 
-int
-searchreallyneardoor (Door possibledoor, Door testdoor)
+int searchreallyneardoor (Door possibledoor, Door testdoor)
 {
 	switch (testdoor.direction)
 		{
@@ -140,30 +163,19 @@ searchreallyneardoor (Door possibledoor, Door testdoor)
 	return 0;
 }
 
-int
-confirmoverlap (Room * roomsizetab, Room newroom, int roomcount)
+int confirmoverlap (Room * roomsizetab, Room newroom, int roomcount)
 {
 	for (int i = 0; i < roomcount; i++)
 		{
-			if ((((newroom.ymin >= roomsizetab[i].ymin - 1
-						 && newroom.ymin <= roomsizetab[i].ymax + 1)
-						|| (newroom.ymax >= roomsizetab[i].ymin - 1
-								&& newroom.ymax <= roomsizetab[i].ymax + 1))
-					 &&
-					 ((newroom.xmin >= roomsizetab[i].xmin - 1
-						 && newroom.xmin <= roomsizetab[i].xmax + 1)
-						|| (newroom.xmax >= roomsizetab[i].xmin - 1
-								&& newroom.xmax <= roomsizetab[i].xmax + 1)))
-					||
-					(((roomsizetab[i].ymin >= newroom.ymin - 1
-						 && roomsizetab[i].ymin <= newroom.ymax + 1)
-						|| (roomsizetab[i].ymax >= newroom.ymin - 1
-								&& roomsizetab[i].ymax <= newroom.ymax + 1))
-					 &&
-					 ((roomsizetab[i].xmin >= newroom.xmin - 1
-						 && roomsizetab[i].xmin <= newroom.xmax + 1)
-						|| (roomsizetab[i].xmax >= newroom.xmin - 1
-								&& roomsizetab[i].xmax <= newroom.xmax + 1))))
+			if (((newroom.ymin >= roomsizetab[i].ymin - 1
+						&& newroom.ymin <= roomsizetab[i].ymax + 1)
+					 || (newroom.ymax >= roomsizetab[i].ymin - 1
+							 && newroom.ymax <= roomsizetab[i].ymax + 1))
+					&&
+					((newroom.xmin >= roomsizetab[i].xmin - 1
+						&& newroom.xmin <= roomsizetab[i].xmax + 1)
+					 || (newroom.xmax >= roomsizetab[i].xmin - 1
+							 && newroom.xmax <= roomsizetab[i].xmax + 1)))
 				{
 					return 0;							//overlap
 				}
@@ -172,8 +184,8 @@ confirmoverlap (Room * roomsizetab, Room newroom, int roomcount)
 }
 
 int
-confirmdoorloc (Door * tabdoor, Door testdoor, int doorcount,
-								Room * roomsizetab, int roomcount)
+	confirmdoorloc (Door * tabdoor, Door testdoor, int doorcount,
+									Room * roomsizetab, int roomcount)
 {
 	for (int i = 0; i < doorcount; i++)
 		{
@@ -251,8 +263,8 @@ confirmdoorloc (Door * tabdoor, Door testdoor, int doorcount,
 }
 
 int
-confirmdoororientation (Room * roomsizetab, Room newroom, int roomcount,
-												Door prevdoor)
+	confirmdoororientation (Room * roomsizetab, Room newroom, int roomcount,
+													Door prevdoor)
 {
 	for (int j = 0; j < 4; j++)
 		{
@@ -265,25 +277,25 @@ confirmdoororientation (Room * roomsizetab, Room newroom, int roomcount,
 								case 0:
 									if ((newroom.ymax + 5 >= roomsizetab[i].ymin
 											 && newroom.ymax + 5 <= roomsizetab[i].ymax)
-											 &&(newroom.ymax + 3 >= roomsizetab[i].ymin
-											 && newroom.ymax + 3 <= roomsizetab[i].ymax)
+											&& (newroom.ymax + 3 >= roomsizetab[i].ymin
+													&& newroom.ymax + 3 <= roomsizetab[i].ymax)
 											&&
-											((newroom.xmin-1 >= roomsizetab[i].xmin
-												&& newroom.xmin-1 <= roomsizetab[i].xmax)
-											 || (newroom.xmax+1 >= roomsizetab[i].xmin
-													 && newroom.xmax+1 <= roomsizetab[i].xmax)))
+											((newroom.xmin - 1 >= roomsizetab[i].xmin
+												&& newroom.xmin - 1 <= roomsizetab[i].xmax)
+											 || (newroom.xmax + 1 >= roomsizetab[i].xmin
+													 && newroom.xmax + 1 <= roomsizetab[i].xmax)))
 										{
 											return 0;
 										}
 									break;
 								case 1:
-									if (((newroom.ymin-1 >= roomsizetab[i].ymin
-												&& newroom.ymin-1 <= roomsizetab[i].ymax)
-											 || (newroom.ymax+1 >= roomsizetab[i].ymin
-													 && newroom.ymax+1 <= roomsizetab[i].ymax))
+									if (((newroom.ymin - 1 >= roomsizetab[i].ymin
+												&& newroom.ymin - 1 <= roomsizetab[i].ymax)
+											 || (newroom.ymax + 1 >= roomsizetab[i].ymin
+													 && newroom.ymax + 1 <= roomsizetab[i].ymax))
 											&& (newroom.xmax + 5 >= roomsizetab[i].xmin
 													&& newroom.xmax + 5 <= roomsizetab[i].xmax)
-													&&(newroom.xmax + 3 >= roomsizetab[i].xmin
+											&& (newroom.xmax + 3 >= roomsizetab[i].xmin
 													&& newroom.xmax + 3 <= roomsizetab[i].xmax))
 										{
 											return 0;
@@ -292,27 +304,27 @@ confirmdoororientation (Room * roomsizetab, Room newroom, int roomcount,
 								case 2:
 									if ((newroom.ymin - 5 >= roomsizetab[i].ymin
 											 && newroom.ymin - 5 <= roomsizetab[i].ymax)
-											 &&(newroom.ymin - 3 >= roomsizetab[i].ymin
-											 && newroom.ymin - 3 <= roomsizetab[i].ymax)
+											&& (newroom.ymin - 3 >= roomsizetab[i].ymin
+													&& newroom.ymin - 3 <= roomsizetab[i].ymax)
 											&&
-											((newroom.xmin-1 >= roomsizetab[i].xmin
-												&& newroom.xmin-1 <= roomsizetab[i].xmax)
-											 || (newroom.xmax+1 >= roomsizetab[i].xmin
-													 && newroom.xmax+1 <= roomsizetab[i].xmax)))
+											((newroom.xmin - 1 >= roomsizetab[i].xmin
+												&& newroom.xmin - 1 <= roomsizetab[i].xmax)
+											 || (newroom.xmax + 1 >= roomsizetab[i].xmin
+													 && newroom.xmax + 1 <= roomsizetab[i].xmax)))
 										{
 											return 0;
 										}
 									break;
 								case 3:
-									if (((newroom.ymin-1 >= roomsizetab[i].ymin
-												&& newroom.ymin-1 <= roomsizetab[i].ymax)
-											 || (newroom.ymax+1 >= roomsizetab[i].ymin
-													 && newroom.ymax+1 <= roomsizetab[i].ymax))
+									if (((newroom.ymin - 1 >= roomsizetab[i].ymin
+												&& newroom.ymin - 1 <= roomsizetab[i].ymax)
+											 || (newroom.ymax + 1 >= roomsizetab[i].ymin
+													 && newroom.ymax + 1 <= roomsizetab[i].ymax))
 											&&
 											(newroom.xmin - -5 >= roomsizetab[i].xmin
 											 && newroom.xmin - 5 <= roomsizetab[i].xmax)
-											 &&(newroom.xmin - 3 >= roomsizetab[i].xmin
-											 && newroom.xmin - 3 <= roomsizetab[i].xmax))
+											&& (newroom.xmin - 3 >= roomsizetab[i].xmin
+													&& newroom.xmin - 3 <= roomsizetab[i].xmax))
 										{
 											return 0;
 										}
@@ -327,8 +339,8 @@ confirmdoororientation (Room * roomsizetab, Room newroom, int roomcount,
 }
 
 int
-adaptnextsizeroomfuse (Room * newroom, int roomcount,
-											 Door * tabdoor, Door testdoor, int doorcount)
+	adaptnextsizeroomfuse (Room * newroom, int roomcount,
+												 Door * tabdoor, Door testdoor, int doorcount)
 {
 	int countdoor;
 	for (int i = 0; i < doorcount; i++)
@@ -438,8 +450,9 @@ adaptnextsizeroomfuse (Room * newroom, int roomcount,
 
 
 Room
-generateroom (int *seed, int *maxroom, Room * tabroom,
-							Door * prevdoor, int *roomcount, Door * tabdoor, int *doorcount)
+	generateroom (int *seed, int *maxroom, Room * tabroom,
+								Door * prevdoor, int *roomcount, Door * tabdoor,
+								int *doorcount)
 {
 	Room newroom;
 	int randtamp, directionindex, randtamp2, doornum = *doorcount;
@@ -543,28 +556,28 @@ generateroom (int *seed, int *maxroom, Room * tabroom,
 					switch (prevdoor->direction)
 						{
 						case 0:
-							newroom.xmin = prevdoor->x - 3 + (rand () % 2);
-							newroom.xmax = prevdoor->x + 3 - (rand () % 2);
+							newroom.xmin = prevdoor->x - 3 + (rand () % 3);
+							newroom.xmax = prevdoor->x + 3 - (rand () % 3);
 							newroom.ymin = prevdoor->y + 1;
 							newroom.ymax = newroom.ymin + 3 + (rand () % 4);
 							break;
 						case 1:
 							newroom.xmin = prevdoor->x + 1;
 							newroom.xmax = newroom.xmin + 3 + (rand () % 4);
-							newroom.ymin = prevdoor->y - 3 + (rand () % 2);
-							newroom.ymax = prevdoor->y + 3 - (rand () % 2);
+							newroom.ymin = prevdoor->y - 3 + (rand () % 3);
+							newroom.ymax = prevdoor->y + 3 - (rand () % 3);
 							break;
 						case 2:
-							newroom.xmin = prevdoor->x - 3 + (rand () % 2);
-							newroom.xmax = prevdoor->x + 3 - (rand () % 2);
+							newroom.xmin = prevdoor->x - 3 + (rand () % 3);
+							newroom.xmax = prevdoor->x + 3 - (rand () % 3);
 							newroom.ymax = prevdoor->y - 1;
 							newroom.ymin = newroom.ymax - 3 - (rand () % 4);
 							break;
 						case 3:
 							newroom.xmax = prevdoor->x - 1;
 							newroom.xmin = newroom.xmax - 3 - (rand () % 4);
-							newroom.ymin = prevdoor->y - 3 + (rand () % 2);
-							newroom.ymax = prevdoor->y + 3 - (rand () % 2);
+							newroom.ymin = prevdoor->y - 3 + (rand () % 3);
+							newroom.ymax = prevdoor->y + 3 - (rand () % 3);
 							break;
 						}
 				}
@@ -668,28 +681,28 @@ generateroom (int *seed, int *maxroom, Room * tabroom,
 			switch (prevdoor->direction)
 				{
 				case 0:
-					newroom.xmin = prevdoor->x - 4 + (rand () % 3);
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
+					newroom.xmin = prevdoor->x - 4 + (rand () % 4);
+					newroom.xmax = prevdoor->x + 4 - (rand () % 4);
 					newroom.ymin = prevdoor->y + 1;
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.ymax = newroom.ymin + 3 + (rand () % 6);
 					break;
 				case 1:
 					newroom.xmin = prevdoor->x + 1;
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
-					newroom.ymin = prevdoor->y - 4 + (rand () % 3);
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.xmax = newroom.xmin + 3 + (rand () % 6);
+					newroom.ymin = prevdoor->y - 4 + (rand () % 4);
+					newroom.ymax = prevdoor->y + 4 - (rand () % 4);
 					break;
 				case 2:
-					newroom.xmin = prevdoor->x - 4 + (rand () % 3);
-					newroom.xmax = newroom.xmin + 4 + (rand () % 5);
+					newroom.xmin = prevdoor->x - 4 + (rand () % 4);
+					newroom.xmax = prevdoor->x + 4 - (rand () % 4);
 					newroom.ymax = prevdoor->y - 1;
-					newroom.ymin = newroom.ymax - 4 - (rand () % 5);
+					newroom.ymin = newroom.ymax - 3 - (rand () % 6);
 					break;
 				case 3:
 					newroom.xmax = prevdoor->x - 1;
-					newroom.xmin = newroom.xmax - 4 - (rand () % 5);
-					newroom.ymin = prevdoor->y - 4 + (rand () % 3);
-					newroom.ymax = newroom.ymin + 4 + (rand () % 5);
+					newroom.xmin = newroom.xmax - 3 - (rand () % 6);
+					newroom.ymin = prevdoor->y - 4 + (rand () % 4);
+					newroom.ymax = prevdoor->y + 4 - (rand () % 4);
 					break;
 				}
 			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
