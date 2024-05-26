@@ -2,7 +2,7 @@ Download all the files;
 Write the command:
 
   ./make Cosmic Yonder
-and lauch the game.
+and launch the game.
 
 Explore a dungeon generated proceduraly, find materials by killing monster within the limited time. With enough you win the game.
 
