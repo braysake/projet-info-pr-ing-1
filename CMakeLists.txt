@@ -4,4 +4,4 @@ project(projet_info_pr_ing_1 C)
 set(CMAKE_C_STANDARD 11)
 
 add_executable(projet_info_pr_ing_1
-        V25.3.c)
+        V26.c)
