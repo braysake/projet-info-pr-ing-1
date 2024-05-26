@@ -1,39 +1,4 @@
-#include <stdio.h>
-#include <stdlib.h>
-#include <unistd.h>
-#define MAX_ROOM 100
-
-
-typedef struct
-{
-	int x;
-	int y;
-	int room_num1;
-	int room_num2;
-	int direction;
-} Door;
-
-typedef struct
-{
-	int room_door[4];
-	int num_door;
-	int x_min;
-	int x_max;
-	int y_min;
-	int y_max;
-
-} Room;
-
-/*void makegrid(int grid[MAX_ROOM*13][MAX_ROOM*13], Door* tab_door, int door_count, Room* tab_room, int room_count){
-  for(int i=0;i<room_count; i++) {
-    for(int j=tab_door[i].x_min; j<=tab_door[i].x_max; j++){
-      for(int h=tab_door[i].y_min; h<=tab_door[i].y_max; h++){
-        grid[((MAX_ROOM*13)/2)+j]
-      }
-    }
-  } 
-}*/
-
+#include"params.h"
 int
 searchNearDoor (Door * tab_door, Door test_door, int door_count)
 {
@@ -886,99 +851,42 @@ generateRoom (int *seed, Room * tab_room,
 	return new_room;
 }
 
-Room
-createmainroom ()
-{
-	Room froom;
-	for (int j = 0; j < 4; j++)
-		{
-			froom.room_door[j] = 1;
-		}
-	froom.num_door = 4;
-	froom.x_min = 1 * -4;
-	froom.x_max = 1 * 5;
-	froom.y_min = 1 * -4;
-	froom.y_max = 1 * 5;
-
-	return froom;
+Room createMainRoom() {
+  Room f_room;
+  for (int j = 0; j < 4; j++) {
+      f_room.room_door[j] = 1;
+  }
+    f_room.num_door = 4;
+    f_room.x_min = 1 * -4;
+    f_room.x_max = 1 * 5;
+    f_room.y_min = 1 * -4;
+    f_room.y_max = 1 * 5;
+    f_room.nbr_enemy = 0;
+    f_room.nbr_object = 0;
+    f_room.nbr_armor = 0;
+    f_room.nbr_blade = 0;
+  return f_room;
 }
-
-void
-createmaindoor (Door * tab_door)
-{
-	tab_door[0].x = 0;
-	tab_door[0].y = 6;
-	tab_door[0].room_num1 = 0;
-	tab_door[0].room_num2 = -1;
-	tab_door[0].direction = 0;
-	tab_door[1].x = 6;
-	tab_door[1].y = 0;
-	tab_door[1].room_num1 = 0;
-	tab_door[1].room_num2 = -1;
-	tab_door[1].direction = 1;
-	tab_door[2].x = 0;
-	tab_door[2].y = -5;
-	tab_door[2].room_num1 = 0;
-	tab_door[2].room_num2 = -1;
-	tab_door[2].direction = 2;
-	tab_door[3].x = -5;
-	tab_door[3].y = 0;
-	tab_door[3].room_num1 = 0;
-	tab_door[3].room_num2 = -1;
-	tab_door[3].direction = 3;
-}
-
-int
-main ()
-{
-	int seed = 999;
-	srand (seed);
-	int grid[MAX_ROOM * 13][MAX_ROOM * 13];
-	int room_count = 1;
-	int door_count = 4;
-	Room *tab_room;
-	Door *tab_door;
-	tab_door = calloc (MAX_ROOM * 4, sizeof (Door));
-	if (tab_door == NULL)
-		{
-			exit (1);
-		}
-	tab_room = calloc (MAX_ROOM, sizeof (Room));
-	if (tab_room == NULL)
-		{
-			exit (1);
-		}
-	createmainroom ();
-	createmaindoor (tab_door);
-	tab_room[0] = createmainroom ();
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[3],
-									&room_count, tab_door, &door_count);
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[4],
-									&room_count, tab_door, &door_count);
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[5], &room_count, tab_door,
-									&door_count);
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[7], &room_count, tab_door,
-									&door_count);
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[6], &room_count, tab_door,
-									&door_count);
-	tab_room[room_count] =
-		generateRoom (&seed, tab_room, &tab_door[8], &room_count, tab_door,
-									&door_count);
-	printf ("%d", tab_room[1].room_door[0]);
-	printf ("%d", tab_room[1].room_door[1]);
-	printf ("%d", tab_room[1].room_door[2]);
-	printf ("%d", tab_room[1].room_door[3]);
-	printf ("%d", tab_room[1].num_door);
-	//printf("%d",tab_room[room_count].x_min);
-	//printf("%d",tab_room[room_count].x_max);
-	/*for(int i=0; i<door_count; i++){
-	   printroomset(tab_room, tab_door, door_count, i, grid);
-	   }
-	   printgrid(grid); */
-	return 0;
+  
+void createMainDoor(Door *tab_door) {
+    tab_door[0].x = 0;
+    tab_door[0].y = 6;
+    tab_door[0].room_num1 = 0;
+    tab_door[0].room_num2 = -1;
+    tab_door[0].direction = 0;
+    tab_door[1].x = 6;
+    tab_door[1].y = 0;
+    tab_door[1].room_num1 = 0;
+    tab_door[1].room_num2 = -1;
+    tab_door[1].direction = 1;
+    tab_door[2].x = 0;
+    tab_door[2].y = -5;
+    tab_door[2].room_num1 = 0;
+    tab_door[2].room_num2 = -1;
+    tab_door[2].direction = 2;
+    tab_door[3].x = -5;
+    tab_door[3].y = 0;
+    tab_door[3].room_num1 = 0;
+    tab_door[3].room_num2 = -1;
+    tab_door[3].direction = 3;
 }
