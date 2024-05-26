@@ -8,7 +8,6 @@ int main(void){
     //nodelay(stdscr,True);
     //timeout(delay);
 
-    //setlocale(LC_CTYPE, "");
     keypad(stdscr, TRUE);
     //create size screen
     int screen_length=130; //130
@@ -542,7 +541,7 @@ int main(void){
                                 player.coordinates.y+=2;
                                 if(tab_door[i].room_num2 == -1){
                                     //generate Room
-                                    tab_room[room_count]= generateRoom(&seed, &max_room,tab_room,&tab_door[i],
+                                    tab_room[room_count]= generateRoom(&seed,tab_room,&tab_door[i],
                                                                        &room_count,tab_door, &door_count);
                                     //generate mobs armor blade
                                     tab_room[room_count - 1].nbr_enemy = rand() % 3;
@@ -588,7 +587,7 @@ int main(void){
                                 player.coordinates.y-=2;
                                 if(tab_door[i].room_num2 == -1){
                                     //generate Room
-                                    tab_room[room_count]= generateRoom(&seed, &max_room,tab_room,&tab_door[i],
+                                    tab_room[room_count]= generateRoom(&seed,tab_room,&tab_door[i],
                                                                        &room_count,tab_door, &door_count);
                                     
                                     //generate mobs armor blade
@@ -635,7 +634,7 @@ int main(void){
                                 player.coordinates.x-=2;
                                 if(tab_door[i].room_num2 == -1){
                                     //generate Room
-                                    tab_room[room_count]= generateRoom(&seed, &max_room,tab_room,&tab_door[i],
+                                    tab_room[room_count]= generateRoom(&seed,tab_room,&tab_door[i],
                                                                        &room_count,tab_door, &door_count);
                                     
                                     //generate mobs armor
@@ -680,7 +679,7 @@ int main(void){
                                 player.coordinates.x+=2;
                                 if(tab_door[i].room_num2 == -1){
                                     //generate Room
-                                    tab_room[room_count]= generateRoom(&seed, &max_room,tab_room,&tab_door[i],
+                                    tab_room[room_count]= generateRoom(&seed, tab_room,&tab_door[i],
                                                                        &room_count, tab_door, &door_count);
 
                                     //generate mobs armor blade

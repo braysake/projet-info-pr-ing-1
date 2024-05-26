@@ -3,6 +3,7 @@
 #include <time.h>
 #include <math.h>
 #include <ncurses.h>
+#include <unistd.h>
 
 //define define new color
 #define COLOR_PINK 8
@@ -178,14 +179,14 @@ int searchReallyNearDoor (Door possible_door, Door test_door);
 
 int confirmOverlap (Room * room_size_tab, Room new_room, int room_count);
 
-int confirmDoorLock (Door * tabDoor, Door testDoor, int Doorcount, Room * Roomsizetab, int Roomcount);
+int confirmDoorLoc (Door * tabDoor, Door testDoor, int Doorcount, Room * Roomsizetab, int Roomcount);
 
 int confirmDoororientation (Room * Roomsizetab, Room newRoom, int Roomcount,Door prevDoor);
 
 int adaptNextSizeRoomFuse (Room * new_room, int room_count, Door * tab_door, Door test_door, int door_count);
 
 
-Room generateRoom (int* seed, int *max_room, Room * tab_room, Door * prev_door, int *room_count, Door * tab_door, int *door_count);
+Room generateRoom (int* seed, Room * tab_room, Door * prev_door, int *room_count, Door * tab_door, int *door_count);
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 //enemy function
