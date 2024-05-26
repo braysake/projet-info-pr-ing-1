@@ -95,10 +95,10 @@ typedef struct {
 typedef struct {
   int x;
   int y;
-  int roomNum1;
-  int roomNum2;
+  int room_num1;
+  int room_num2;
   int direction;
-} door;
+} Door;
 
 typedef struct {
   int room_door[4];
@@ -115,7 +115,7 @@ typedef struct {
   Armor* tab_armor;
   int nbr_blade;
   Weapon* tab_blade;
-}room;
+}Room;
 
 typedef struct{
     Position coordinates;
@@ -132,7 +132,7 @@ typedef struct{
     Object* inventory;
     Weapon blade;
     Armor stuff;
-} hero;
+} Hero;
 
 int min(int a,int b){
     if(a<=b){
@@ -141,14 +141,14 @@ int min(int a,int b){
     return b;
     }
 
-int absolute_value(int a){
+int absoluteValue(int a){
     if(a<0){
         return -a;
         }
     return a;
     }
 
-Weapon search_blade(int ID,FILE* file){
+Weapon searchBlade(int ID, FILE* file){
     int verify,test,temp;
     Weapon blade;
 	rewind(file);
@@ -211,7 +211,7 @@ Weapon search_blade(int ID,FILE* file){
     exit(12);
     }
 
-Armor search_stuff(int ID,FILE* file){
+Armor searchStuff(int ID, FILE* file){
     int verify,test;
     char* verify_name=NULL;
     Armor stuff;
@@ -257,7 +257,7 @@ Armor search_stuff(int ID,FILE* file){
     exit(12);
     }
 
-Object search_object(int ID,FILE* file){
+Object searchObject(int ID, FILE* file){
     int verify,test;
     Object think;
 	rewind(file);
@@ -320,9 +320,9 @@ Object search_object(int ID,FILE* file){
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//function hero
-hero build_hero(FILE* blade_file, FILE* fichier_stuff){
-    hero player;
+//function Hero
+Hero buildHero(FILE* blade_file, FILE* stuff_file){
+    Hero player;
     player.coordinates.x=0;
     player.coordinates.y=0;
     player.room=0;
@@ -340,15 +340,16 @@ hero build_hero(FILE* blade_file, FILE* fichier_stuff){
         printf("error calloc inventory");
         exit(2);
         }
-    player.blade=search_blade(0, blade_file);
-    player.stuff=search_stuff(0,fichier_stuff);
+    player.blade= searchBlade(0, blade_file);
+    player.stuff= searchStuff(0, stuff_file);
 
     return player;
     }
     
-void display_game(int screen_length,int screen_width,hero player,WINDOW* background, time_t timer,int time_pause,int time_jouer,int time_to_play,int* end);  
+void displayGame(int screen_length, int screen_width, Hero player, WINDOW* background, time_t timer, int time_pause,
+                 int time_play, int time_to_play, int* end);
 
-void use_object(hero* player,int position_stuff){
+void useObject(Hero* player, int position_stuff){
     //effect
     switch (player->inventory[position_stuff].what_augmentation){
         case 1:
@@ -387,13 +388,15 @@ void use_object(hero* player,int position_stuff){
         }
     }
 
-int collect_object(hero* player,room* a){
-    room* tab=a+player->room;
+int collectObject(Hero* player, Room* a){
+    Room* tab= a + player->room;
     
     for(int i=0;i<tab->nbr_object;i++){
-        if(player->coordinates.x==tab->tab_object[i].coordinates.x && player->coordinates.y==tab->tab_object[i].coordinates.y){
+        if(player->coordinates.x==tab->tab_object[i].coordinates.x &&
+        player->coordinates.y==tab->tab_object[i].coordinates.y){
             for(int j=0;j<15;j++){
-                if(player->inventory[j].id==tab->tab_object[i].id && player->inventory[j].stack<player->inventory[j].max_stack){
+                if(player->inventory[j].id==tab->tab_object[i].id &&
+                player->inventory[j].stack<player->inventory[j].max_stack){
                     player->inventory[j].stack++;
 
                     tab->tab_object[i]=tab->tab_object[tab->nbr_object];
@@ -417,18 +420,21 @@ int collect_object(hero* player,room* a){
         }
     }
 
-void collect_armor(hero* player,room* a,int screen_length, int screen_width,WINDOW* background,time_t timer,int time_pause,int time_jouer,int time_to_play,int* end){
-    room* tab=a+player->room;
+void collectArmor(Hero* player, Room* a, int screen_length, int screen_width, WINDOW* background, time_t timer,
+                  int time_pause, int time_play, int time_to_play, int* end){
+    Room* tab= a + player->room;
     
     for(int i=0;i<tab->nbr_armor;i++){
-        if(player->coordinates.x==tab->tab_armor[i].coordinates.x && player->coordinates.y==tab->tab_armor[i].coordinates.y){
+        if(player->coordinates.x==tab->tab_armor[i].coordinates.x &&
+        player->coordinates.y==tab->tab_armor[i].coordinates.y){
             int test1=getch();
             do{
                 //refresh the timer
                 //display game
-                display_game(screen_length,screen_width,*player,background,timer,time_pause,time_jouer,time_to_play,end);
+                displayGame(screen_length, screen_width, *player, background, timer, time_pause, time_play,
+                            time_to_play, end);
 
-                //verfication
+                //verification
                 attron(COLOR_PAIR(8));
                 mvprintw(7,4,"are you sure you want to change your stuff?");
                 mvprintw(8,4,"y/n");
@@ -462,8 +468,8 @@ void collect_armor(hero* player,room* a,int screen_length, int screen_width,WIND
         }
     }
 
-void collect_blade(hero* player,room* a,int screen_length,int screen_width,WINDOW* background,time_t timer,int time_pause,int time_jouer,int time_to_play,int* end){
-    room* tab=a+player->room;
+void collectBlade(Hero* player, Room* a, int screen_length, int screen_width, WINDOW* background, time_t timer, int time_pause, int time_play, int time_to_play, int* end){
+    Room* tab= a + player->room;
     
     for(int i=0;i<tab->nbr_blade;i++){
         if(player->coordinates.x==tab->tab_blade[i].coordinates.x && player->coordinates.y==tab->tab_blade[i].coordinates.y){
@@ -471,9 +477,10 @@ void collect_blade(hero* player,room* a,int screen_length,int screen_width,WINDO
             do{
                 //refresh the timer
                 //display game
-                display_game(screen_length,screen_width,*player,background,timer,time_pause,time_jouer,time_to_play,end);
+                displayGame(screen_length, screen_width, *player, background, timer, time_pause, time_play,
+                            time_to_play, end);
 
-                //verfication
+                //verification
                 attron(COLOR_PAIR(8));
                 mvprintw(7,4,"are you sure you want to change your blade?");
                 mvprintw(8,4,"y/n");
@@ -509,7 +516,7 @@ void collect_blade(hero* player,room* a,int screen_length,int screen_width,WINDO
         }
     }
  
-void display_hit(hero player,int screen_length,int screen_width){
+void displayHit(Hero player, int screen_length, int screen_width){
     attron(COLOR_PAIR(15));
 
     if(player.start_hit-time(NULL)>0 && player.start_hit-time(NULL)<=1){
@@ -536,8 +543,8 @@ void display_hit(hero player,int screen_length,int screen_width){
         }
     }
 
-void you_hit(hero* player,room* a){
-    room* tab=a+player->room;
+void youHit(Hero* player, Room* a){
+    Room* tab= a + player->room;
 
     switch (player->blade.type){
         case CC:
@@ -599,8 +606,8 @@ void you_hit(hero* player,room* a){
         }
     }
 
-void be_hit(hero* player,room* a){
-    room* tab=a+player->room;
+void beHit(Hero* player, Room* a){
+    Room* tab= a + player->room;
 
     for(int i=0;i<tab->nbr_enemy;i++){
         if(player->coordinates.y==tab->tab_enemy[i].coordinates.y && (player->coordinates.x-tab->tab_enemy[i].coordinates.x <= tab->tab_enemy[i].range || player->coordinates.x-tab->tab_enemy[i].coordinates.x <= -tab->tab_enemy[i].range)){
@@ -618,7 +625,7 @@ void be_hit(hero* player,room* a){
         }
     }
 
-void win_level(hero* player){
+void winLevel(Hero* player){
     while(player->XP >= 1000){
         player->XP -= 1000;
         player->level++;
@@ -630,53 +637,53 @@ void win_level(hero* player){
         }
     }
     
-void death(hero* player){
+void death(Hero* player){
     player->coordinates.x=0;
     player->coordinates.y=0;
     player->room=0;
     player->life=100;
     }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//room fonction
+//Room function
 int
-searchneardoor (door * tabdoor, door testdoor, int doorcount)
+searchNearDoor (Door * tab_door, Door test_door, int door_count)
 {
-	for (int i = 0; i < doorcount; i++)
+	for (int i = 0; i < door_count; i++)
 		{
-			switch (testdoor.direction)
+			switch (test_door.direction)
 				{
 				case 0:
-					if (tabdoor[i].x >= (testdoor.x) - 6
-							&& tabdoor[i].x <= (testdoor.x) + 6
-							&& tabdoor[i].y >= (testdoor.y) + 1
-							&& tabdoor[i].y <= (testdoor.y) + 9)
+					if (tab_door[i].x >= (test_door.x) - 6
+                        && tab_door[i].x <= (test_door.x) + 6
+                        && tab_door[i].y >= (test_door.y) + 1
+                        && tab_door[i].y <= (test_door.y) + 9)
 						{
 							return 1;
 						}
 					break;
 				case 1:
-					if (tabdoor[i].y >= (testdoor.y) - 6
-							&& tabdoor[i].y <= (testdoor.y) + 6
-							&& tabdoor[i].x >= (testdoor.x) + 1
-							&& tabdoor[i].x <= (testdoor.x) + 9)
+					if (tab_door[i].y >= (test_door.y) - 6
+                        && tab_door[i].y <= (test_door.y) + 6
+                        && tab_door[i].x >= (test_door.x) + 1
+                        && tab_door[i].x <= (test_door.x) + 9)
 						{
 							return 1;
 						}
 					break;
 				case 2:
-					if (tabdoor[i].x >= (testdoor.x) - 6
-							&& tabdoor[i].x <= (testdoor.x) + 6
-							&& tabdoor[i].y <= (testdoor.y) - 1
-							&& tabdoor[i].y >= (testdoor.y) - 9)
+					if (tab_door[i].x >= (test_door.x) - 6
+                        && tab_door[i].x <= (test_door.x) + 6
+                        && tab_door[i].y <= (test_door.y) - 1
+                        && tab_door[i].y >= (test_door.y) - 9)
 						{
 							return 1;
 						}
 					break;
 				case 3:
-					if (tabdoor[i].y >= (testdoor.y) - 6
-							&& tabdoor[i].y <= (testdoor.y) + 6
-							&& tabdoor[i].x <= (testdoor.x) - 1
-							&& tabdoor[i].x >= (testdoor.x) - 9)
+					if (tab_door[i].y >= (test_door.y) - 6
+                        && tab_door[i].y <= (test_door.y) + 6
+                        && tab_door[i].x <= (test_door.x) - 1
+                        && tab_door[i].x >= (test_door.x) - 9)
 						{
 							return 1;
 						}
@@ -689,62 +696,62 @@ searchneardoor (door * tabdoor, door testdoor, int doorcount)
 
 
 int
-searchreallyneardoor (door possibledoor, door testdoor)
+searchReallyNearDoor (Door possible_door, Door test_door)
 {
-	switch (testdoor.direction)
+	switch (test_door.direction)
 		{
 		case 0:
-			if (possibledoor.x >= (testdoor.x) - 5
-					&& possibledoor.x <= (testdoor.x) + 5
-					&& possibledoor.y >= (testdoor.y) + 1
-					&& possibledoor.y <= (testdoor.y) + 7
-					&& possibledoor.direction != testdoor.direction)
+			if (possible_door.x >= (test_door.x) - 5
+                && possible_door.x <= (test_door.x) + 5
+                && possible_door.y >= (test_door.y) + 1
+                && possible_door.y <= (test_door.y) + 7
+                && possible_door.direction != test_door.direction)
 				{
-					if (possibledoor.roomNum1 != testdoor.roomNum1
-							&& possibledoor.roomNum2 != testdoor.roomNum1
-							&& possibledoor.direction != testdoor.direction)
+					if (possible_door.room_num1 != test_door.room_num1
+                        && possible_door.room_num2 != test_door.room_num1
+                        && possible_door.direction != test_door.direction)
 						{
 							return 1;
 						}
 				}
 			break;
 		case 1:
-			if (possibledoor.y >= (testdoor.y) - 5
-					&& possibledoor.y <= (testdoor.y) + 5
-					&& possibledoor.x >= (testdoor.x) + 1
-					&& possibledoor.x <= (testdoor.x) + 7)
+			if (possible_door.y >= (test_door.y) - 5
+                && possible_door.y <= (test_door.y) + 5
+                && possible_door.x >= (test_door.x) + 1
+                && possible_door.x <= (test_door.x) + 7)
 				{
-					if (possibledoor.roomNum1 != testdoor.roomNum1
-							&& possibledoor.roomNum2 != testdoor.roomNum1
-							&& possibledoor.direction != testdoor.direction)
+					if (possible_door.room_num1 != test_door.room_num1
+                        && possible_door.room_num2 != test_door.room_num1
+                        && possible_door.direction != test_door.direction)
 						{
 							return 1;
 						}
 				}
 			break;
 		case 2:
-			if (possibledoor.x >= (testdoor.x) - 5
-					&& possibledoor.x <= (testdoor.x) + 5
-					&& possibledoor.y <= (testdoor.y) - 1
-					&& possibledoor.y >= (testdoor.y) - 7)
+			if (possible_door.x >= (test_door.x) - 5
+                && possible_door.x <= (test_door.x) + 5
+                && possible_door.y <= (test_door.y) - 1
+                && possible_door.y >= (test_door.y) - 7)
 				{
-					if (possibledoor.roomNum1 != testdoor.roomNum1
-							&& possibledoor.roomNum2 != testdoor.roomNum1
-							&& possibledoor.direction != testdoor.direction)
+					if (possible_door.room_num1 != test_door.room_num1
+                        && possible_door.room_num2 != test_door.room_num1
+                        && possible_door.direction != test_door.direction)
 						{
 							return 1;
 						}
 				}
 			break;
 		case 3:
-			if (possibledoor.y >= (testdoor.y) - 5
-					&& possibledoor.y <= (testdoor.y) + 5
-					&& possibledoor.x <= (testdoor.x) - 1
-					&& possibledoor.x >= (testdoor.x) - 7)
+			if (possible_door.y >= (test_door.y) - 5
+                && possible_door.y <= (test_door.y) + 5
+                && possible_door.x <= (test_door.x) - 1
+                && possible_door.x >= (test_door.x) - 7)
 				{
-					if (possibledoor.roomNum1 != testdoor.roomNum1
-							&& possibledoor.roomNum2 != testdoor.roomNum1
-							&& possibledoor.direction != testdoor.direction)
+					if (possible_door.room_num1 != test_door.room_num1
+                        && possible_door.room_num2 != test_door.room_num1
+                        && possible_door.direction != test_door.direction)
 						{
 							return 1;
 						}
@@ -755,29 +762,29 @@ searchreallyneardoor (door possibledoor, door testdoor)
 }
 
 int
-confirmoverlap (room * roomsizetab, room newroom, int roomcount)
+confirmOverlap (Room * room_size_tab, Room new_room, int room_count)
 {
-	for (int i = 0; i < roomcount; i++)
+	for (int i = 0; i < room_count; i++)
 		{
-			if ((((newroom.y_min >= roomsizetab[i].y_min - 1
-						 && newroom.y_min <= roomsizetab[i].y_max + 1)
-						|| (newroom.y_max >= roomsizetab[i].y_min - 1
-								&& newroom.y_max <= roomsizetab[i].y_max + 1))
+			if ((((new_room.y_min >= room_size_tab[i].y_min - 1
+                   && new_room.y_min <= room_size_tab[i].y_max + 1)
+						|| (new_room.y_max >= room_size_tab[i].y_min - 1
+                            && new_room.y_max <= room_size_tab[i].y_max + 1))
 					 &&
-					 ((newroom.x_min >= roomsizetab[i].x_min - 1
-						 && newroom.x_min <= roomsizetab[i].x_max + 1)
-						|| (newroom.x_max >= roomsizetab[i].x_min - 1
-								&& newroom.x_max <= roomsizetab[i].x_max + 1)))
+					 ((new_room.x_min >= room_size_tab[i].x_min - 1
+                       && new_room.x_min <= room_size_tab[i].x_max + 1)
+						|| (new_room.x_max >= room_size_tab[i].x_min - 1
+                            && new_room.x_max <= room_size_tab[i].x_max + 1)))
 					||
-					(((roomsizetab[i].y_min >= newroom.y_min - 1
-						 && roomsizetab[i].y_min <= newroom.y_max + 1)
-						|| (roomsizetab[i].y_max >= newroom.y_min - 1
-								&& roomsizetab[i].y_max <= newroom.y_max + 1))
+					(((room_size_tab[i].y_min >= new_room.y_min - 1
+                       && room_size_tab[i].y_min <= new_room.y_max + 1)
+						|| (room_size_tab[i].y_max >= new_room.y_min - 1
+                            && room_size_tab[i].y_max <= new_room.y_max + 1))
 					 &&
-					 ((roomsizetab[i].x_min >= newroom.x_min - 1
-						 && roomsizetab[i].x_min <= newroom.x_max + 1)
-						|| (roomsizetab[i].x_max >= newroom.x_min - 1
-								&& roomsizetab[i].x_max <= newroom.x_max + 1))))
+					 ((room_size_tab[i].x_min >= new_room.x_min - 1
+                       && room_size_tab[i].x_min <= new_room.x_max + 1)
+						|| (room_size_tab[i].x_max >= new_room.x_min - 1
+                            && room_size_tab[i].x_max <= new_room.x_max + 1))))
 				{
 					return 0;							//overlap
 				}
@@ -785,669 +792,545 @@ confirmoverlap (room * roomsizetab, room newroom, int roomcount)
 	return 1;											//no overlap
 }
 
-int
-confirmdoorloc (door * tabdoor, door testdoor, int doorcount,
-								room * roomsizetab, int roomcount)
-{
-	for (int i = 0; i < doorcount; i++)
-		{
-			if (testdoor.x <= tabdoor[i].x + 4
-					&& testdoor.x >= tabdoor[i].x - 4
-					&& testdoor.y <= tabdoor[i].y + 4
-					&& testdoor.y >= tabdoor[i].y - 4
-					&& tabdoor[i].direction != testdoor.direction)
+int confirmDoorLock (Door * tab_door, Door test_door, int door_count, Room * room_size_tab, int room_count){
+	for (int i = 0; i < door_count; i++){
+			if (test_door.x <= tab_door[i].x + 4
+                && test_door.x >= tab_door[i].x - 4
+                && test_door.y <= tab_door[i].y + 4
+                && test_door.y >= tab_door[i].y - 4
+                && tab_door[i].direction != test_door.direction)
 				{
-					for (int j = 0; j < roomcount; j++)
-						{
-							switch (testdoor.direction)
-								{
-								case 0:
-									if (((testdoor.y + 1 >= roomsizetab[j].y_min
-												&& testdoor.y + 1 <= roomsizetab[j].y_max)
-											 || (testdoor.y + 5 >= roomsizetab[j].y_min
-													 && testdoor.y + 5 <= roomsizetab[j].y_max))
-											&&
-											((testdoor.x - 3 >= roomsizetab[j].x_min
-												&& testdoor.x - 3 <= roomsizetab[j].x_max)
-											 || (testdoor.x + 3 >= roomsizetab[j].x_min
-													 && testdoor.x + 3 <= roomsizetab[j].x_max)))
-										{
-											return 0;
-										}
-									break;
-								case 1:
-									if (((testdoor.y - 3 >= roomsizetab[j].y_min
-												&& testdoor.y - 3 <= roomsizetab[j].y_max)
-											 || (testdoor.y + 3 >= roomsizetab[j].y_min
-													 && testdoor.y + 3 <= roomsizetab[j].y_max))
-											&&
-											((testdoor.x + 1 >= roomsizetab[j].x_min
-												&& testdoor.x + 1 <= roomsizetab[j].x_max)
-											 || (testdoor.x + 5 >= roomsizetab[j].x_min
-													 && testdoor.x + 5 <= roomsizetab[j].x_max)))
-										{
-											return 0;
-										}
-									break;
-								case 2:
-									if (((testdoor.y - 1 >= roomsizetab[j].y_min
-												&& testdoor.y - 1 <= roomsizetab[j].y_max)
-											 || (testdoor.y - 5 >= roomsizetab[j].y_min
-													 && testdoor.y - 5 <= roomsizetab[j].y_max))
-											&&
-											((testdoor.x - 3 >= roomsizetab[j].x_min
-												&& testdoor.x - 3 <= roomsizetab[j].x_max)
-											 || (testdoor.x + 3 >= roomsizetab[j].x_min
-													 && testdoor.x + 3 <= roomsizetab[j].x_max)))
-										{
-											return 0;
-										}
-									break;
-								case 3:
-									if (((testdoor.y - 3 >= roomsizetab[j].y_min
-												&& testdoor.y - 3 <= roomsizetab[j].y_max)
-											 || (testdoor.y + 3 >= roomsizetab[j].y_min
-													 && testdoor.y + 3 <= roomsizetab[j].y_max))
-											&&
-											((testdoor.x - 1 >= roomsizetab[j].x_min
-												&& testdoor.x - 1 <= roomsizetab[j].x_max)
-											 || (testdoor.x - 5 >= roomsizetab[j].x_min
-													 && testdoor.x - 5 <= roomsizetab[j].x_max)))
-										{
-											return 0;
-										}
-									break;
-								}
-						}										//not allowed
+					for (int j = 0; j < room_count; j++){
+                        switch (test_door.direction){
+                            case 0:
+                                if (((test_door.y + 1 >= room_size_tab[j].y_min
+                                && test_door.y + 1 <= room_size_tab[j].y_max)
+                                || (test_door.y + 5 >= room_size_tab[j].y_min
+                                && test_door.y + 5 <= room_size_tab[j].y_max))
+                                && ((test_door.x - 3 >= room_size_tab[j].x_min
+                                && test_door.x - 3 <= room_size_tab[j].x_max)
+                                || (test_door.x + 3 >= room_size_tab[j].x_min
+                                && test_door.x + 3 <= room_size_tab[j].x_max))){
+                                    return 0;
+                                }
+                                break;
+                            case 1:
+                                if (((test_door.y - 3 >= room_size_tab[j].y_min
+                                && test_door.y - 3 <= room_size_tab[j].y_max)
+                                || (test_door.y + 3 >= room_size_tab[j].y_min
+                                && test_door.y + 3 <= room_size_tab[j].y_max))
+                                && ((test_door.x + 1 >= room_size_tab[j].x_min
+                                && test_door.x + 1 <= room_size_tab[j].x_max)
+                                || (test_door.x + 5 >= room_size_tab[j].x_min
+                                && test_door.x + 5 <= room_size_tab[j].x_max))){
+                                    return 0;
+                                }
+                                break;
+							case 2:
+                                if (((test_door.y - 1 >= room_size_tab[j].y_min
+                                && test_door.y - 1 <= room_size_tab[j].y_max)
+                                || (test_door.y - 5 >= room_size_tab[j].y_min
+                                && test_door.y - 5 <= room_size_tab[j].y_max))
+                                && ((test_door.x - 3 >= room_size_tab[j].x_min
+                                && test_door.x - 3 <= room_size_tab[j].x_max)
+                                || (test_door.x + 3 >= room_size_tab[j].x_min
+                                && test_door.x + 3 <= room_size_tab[j].x_max))){
+                                    return 0;
+                                }
+                                break;
+							case 3:
+                                if (((test_door.y - 3 >= room_size_tab[j].y_min
+                                && test_door.y - 3 <= room_size_tab[j].y_max)
+                                || (test_door.y + 3 >= room_size_tab[j].y_min
+                                && test_door.y + 3 <= room_size_tab[j].y_max))
+                                && ((test_door.x - 1 >= room_size_tab[j].x_min
+                                && test_door.x - 1 <= room_size_tab[j].x_max)
+                                || (test_door.x - 5 >= room_size_tab[j].x_min
+                                && test_door.x - 5 <= room_size_tab[j].x_max))){
+                                    return 0;
+                                }
+                                break;
+                        }
+                    }										//not allowed
 				}
-		}
+    }
 	return 1;											//allowed
 }
 
-int
-confirmdoororientation (room * roomsizetab, room newroom, int roomcount,
-												door prevdoor)
-{
-	for (int j = 0; j < 4; j++)
-		{
-			if (newroom.room_door[j] == 1 && (prevdoor.direction + 2) % 4 != j)
-				{
-					for (int i = 0; i < roomcount; i++)
-						{
-							switch (j)
-								{
-								case 0:
-									if ((newroom.y_max + 5 >= roomsizetab[i].y_min
-											 && newroom.y_max + 5 <= roomsizetab[i].y_max)
-											&&
-											((newroom.x_min >= roomsizetab[i].x_min
-												&& newroom.x_min <= roomsizetab[i].x_max)
-											 || (newroom.x_max >= roomsizetab[i].x_min
-													 && newroom.x_max <= roomsizetab[i].x_max)))
-										{
-											return 0;
-										}
-									break;
-								case 1:
-									if (((newroom.y_min >= roomsizetab[i].y_min
-												&& newroom.y_min <= roomsizetab[i].y_max)
-											 || (newroom.y_max >= roomsizetab[i].y_min
-													 && newroom.y_max <= roomsizetab[i].y_max))
-											&& (newroom.x_max + 5 >= roomsizetab[i].x_min
-													&& newroom.x_max + 5 <= roomsizetab[i].x_max))
-										{
-											return 0;
-										}
-									break;
-								case 2:
-									if ((newroom.y_min - 5 >= roomsizetab[i].y_min
-											 && newroom.y_min - 5 <= roomsizetab[i].y_max)
-											&&
-											((newroom.x_min >= roomsizetab[i].x_min
-												&& newroom.x_min <= roomsizetab[i].x_max)
-											 || (newroom.x_max >= roomsizetab[i].x_min
-													 && newroom.x_max <= roomsizetab[i].x_max)))
-										{
-											return 0;
-										}
-									break;
-								case 3:
-									if (((newroom.y_min >= roomsizetab[i].y_min
-												&& newroom.y_min <= roomsizetab[i].y_max)
-											 || (newroom.y_max >= roomsizetab[i].y_min
-													 && newroom.y_max <= roomsizetab[i].y_max))
-											&&
-											(newroom.x_min - 5 >= roomsizetab[i].x_min
-											 && newroom.x_min - 5 <= roomsizetab[i].x_max))
-										{
-											return 0;
-										}
-									break;
-								}
+int confirmDoorOrientation (Room* room_size_tab, Room new_room, int room_count, Door prev_door){
+	for (int j = 0; j < 4; j++){
+			if (new_room.room_door[j] == 1 && (prev_door.direction + 2) % 4 != j){
+                for (int i = 0; i < room_count; i++){
+                    switch (j){
+                        case 0:
+                            if ((new_room.y_max + 5 >= room_size_tab[i].y_min
+                            && new_room.y_max + 5 <= room_size_tab[i].y_max)
+                            && ((new_room.x_min >= room_size_tab[i].x_min
+                            && new_room.x_min <= room_size_tab[i].x_max)
+                            || (new_room.x_max >= room_size_tab[i].x_min
+                            && new_room.x_max <= room_size_tab[i].x_max))){
+                                return 0;
+                            }
+                            break;
+                        case 1:
+                            if (((new_room.y_min >= room_size_tab[i].y_min
+                            && new_room.y_min <= room_size_tab[i].y_max)
+                            || (new_room.y_max >= room_size_tab[i].y_min
+                            && new_room.y_max <= room_size_tab[i].y_max))
+                            && (new_room.x_max + 5 >= room_size_tab[i].x_min
+                            && new_room.x_max + 5 <= room_size_tab[i].x_max)){
+                                return 0;
+                            }
+                            break;
+                        case 2:
+                            if ((new_room.y_min - 5 >= room_size_tab[i].y_min
+                            && new_room.y_min - 5 <= room_size_tab[i].y_max)
+                            && ((new_room.x_min >= room_size_tab[i].x_min
+                            && new_room.x_min <= room_size_tab[i].x_max)
+                            || (new_room.x_max >= room_size_tab[i].x_min
+                            && new_room.x_max <= room_size_tab[i].x_max))){
+                                return 0;
+                            }
+                            break;
+                        case 3:
+                            if (((new_room.y_min >= room_size_tab[i].y_min
+                            && new_room.y_min <= room_size_tab[i].y_max)
+                            || (new_room.y_max >= room_size_tab[i].y_min
+                            && new_room.y_max <= room_size_tab[i].y_max))
+                            && (new_room.x_min - 5 >= room_size_tab[i].x_min
+                            && new_room.x_min - 5 <= room_size_tab[i].x_max)){
+                                return 0;
+                            }
+                            break;
+                    }
 
-						}
-				}
-		}
+                }
+            }
+    }
 	return 1;
 
 }
 
-int
-adaptnextsizeroomfuse (room * newroom, int roomcount,
-											 door * tabdoor, door testdoor, int doorcount)
-{
-	int countdoor;
-	for (int i = 0; i < doorcount; i++)
-		{
-			if (tabdoor[i].direction != testdoor.direction
-					&& searchreallyneardoor (tabdoor[i], testdoor) > 0)
-				{
-					switch (testdoor.direction)
-						{
+int adaptNextSizeRoomFuse (Room * new_room, int room_count,Door * tab_door, Door test_door, int door_count){
+	int count_door = 0;
+	for (int i = 0; i < door_count; i++){
+        if (tab_door[i].direction!=test_door.direction && searchReallyNearDoor(tab_door[i],test_door) > 0){
+					switch (test_door.direction){
 						case 0:
-							switch (tabdoor[i].direction)
-								{
+							switch (tab_door[i].direction){
 								case 1:
-									newroom->x_min = tabdoor[i].x + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_min = tab_door[i].x + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->y_max = tabdoor[i].y - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_max = tab_door[i].y - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->x_max = tabdoor[i].x - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_max = tab_door[i].x - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
-								}
+                            }
 							break;
 						case 1:
-							switch (tabdoor[i].direction)
-								{
+							switch (tab_door[i].direction){
 								case 0:
-									newroom->y_min = tabdoor[i].y + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_min = tab_door[i].y + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->y_max = tabdoor[i].y - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_max = tab_door[i].y - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->x_max = tabdoor[i].x - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_max = tab_door[i].x - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
-								}
+                            }
 							break;
 						case 2:
-							switch (tabdoor[i].direction)
-								{
+							switch (tab_door[i].direction){
 								case 0:
-									newroom->y_min = tabdoor[i].y + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_min = tab_door[i].y + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 1:
-									newroom->x_min = tabdoor[i].x + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_min = tab_door[i].x + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 3:
-									newroom->x_max = tabdoor[i].x - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_max = tab_door[i].x - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
-								}
+                            }
 							break;
 						case 3:
-							switch (tabdoor[i].direction)
-								{
+							switch (tab_door[i].direction){
 								case 0:
-									newroom->y_min = tabdoor[i].y + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_min = tab_door[i].y + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 1:
-									newroom->x_min = tabdoor[i].x + 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->x_min = tab_door[i].x + 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
 								case 2:
-									newroom->y_max = tabdoor[i].y - 1;
-									tabdoor[i].roomNum2 = roomcount;
-									countdoor++;
-									newroom->room_door[((tabdoor[i].direction) + 2) % 4] = 1;
+									new_room->y_max = tab_door[i].y - 1;
+									tab_door[i].room_num2 = room_count;
+									count_door++;
+									new_room->room_door[((tab_door[i].direction) + 2) % 4] = 1;
 									break;
-								}
+                            }
 							break;
-						}
-				}
-		}
-	return countdoor;
+                    }
+        }
+    }
+	return count_door;
 }
 
 
-room
-generateroom (int seed, int *maxroom, room * tabroom,
-							door * prevdoor, int *roomcount, door * tabdoor, int *doorcount)
-{
-	room newroom;
-	int randtamp, directionindex, randtamp2, doornum = *doorcount;
-	prevdoor->roomNum2 = *roomcount;
-	newroom.num_door = 1;
+Room generateRoom(int seed, int* max_room, Room* tab_room, Door* prev_door, int* room_count, Door* tab_door,
+                  int* door_count){
+	Room new_room;
+	int rand_tamp, direction_index, rand_tamp2; int door_num = *door_count;
+    prev_door->room_num2 = *room_count;
+    new_room.num_door = 1;
 
-	for (int i = 0; i < 4; i++)
-		{
-			newroom.room_door[i] = -1;
-		}
-	newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
-	for (int i = 0; i < *doorcount; i++)
-		{
-			if (searchreallyneardoor (tabdoor[i], *prevdoor) > 0)
-				{
-					newroom.num_door++;
-				}
-		}
-	if (newroom.num_door > 1)
-		{
-			newroom.x_max = 0;
-			newroom.x_min = 0;
-			newroom.y_max = 0;
-			newroom.y_min = 0;
-			adaptnextsizeroomfuse (&newroom, *roomcount, tabdoor,
-														 *prevdoor, *doorcount);
-			do
-				{
-					switch (prevdoor->direction)
-						{
-						case 0:
-							newroom.y_min = prevdoor->y + 1;
-							if (newroom.x_min == 0)
-								{
-									newroom.x_min = prevdoor->x - 5 + (rand () % 3);
-								}
-							if (newroom.x_max == 0)
-								{
-									newroom.x_max = prevdoor->x + 5 - (rand () % 3);
-								}
-							if (newroom.y_max == 0)
-								{
-									newroom.y_max = newroom.y_min + 4 + (rand () % 5);
-								}
-							break;
-						case 1:
-							newroom.x_min = prevdoor->x + 1;
-							if (newroom.x_max == 0)
-								{
-									newroom.x_max = newroom.x_min + 4 + (rand () % 5);
-								}
-							if (newroom.y_min == 0)
-								{
-									newroom.y_min = prevdoor->y - 5 + (rand () % 3);
-								}
-							if (newroom.y_max == 0)
-								{
-									newroom.y_max = prevdoor->y + 5 - (rand () % 3);
-								}
-							break;
-						case 2:
-							newroom.y_max = prevdoor->y - 1;
-							if (newroom.x_min == 0)
-								{
-									newroom.x_min = prevdoor->x - 5 + (rand () % 3);
-								}
-							if (newroom.x_max == 0)
-								{
-									newroom.x_max = prevdoor->x + 5 - (rand () % 3);
-								}
-							if (newroom.y_min == 0)
-								{
-									newroom.y_min = newroom.y_max - 4 - (rand () % 5);
-								}
-							break;
-						case 3:
-							newroom.x_max = prevdoor->x - 1;
-							if (newroom.x_min == 0)
-								{
-									newroom.x_min = newroom.x_max - 4 - (rand () % 5);
-								}
-							if (newroom.y_min == 0)
-								{
-									newroom.y_min = prevdoor->y - 5 + (rand () % 3);
-								}
-							if (newroom.y_max == 0)
-								{
-									newroom.y_max = prevdoor->y + 5 - (rand () % 3);
-								}
-							break;
-						}
+	for (int i = 0; i < 4; i++){
+        new_room.room_door[i] = -1;
+    }
+    new_room.room_door[(prev_door->direction + 2) % 4] = 1;
+	for (int i = 0; i < *door_count; i++){
+        if (searchReallyNearDoor(tab_door[i], *prev_door) > 0){
+            new_room.num_door++;
+        }
+    }
+	if (new_room.num_door > 1){
+        new_room.x_max = 0;
+        new_room.x_min = 0;
+        new_room.y_max = 0;
+        new_room.y_min = 0;
+        adaptNextSizeRoomFuse (&new_room, *room_count, tab_door,*prev_door, *door_count);
+        do
+        {
+            switch (prev_door->direction){
+                case 0:
+                    new_room.y_min = prev_door->y + 1;
+                    if (new_room.x_min == 0){
+                        new_room.x_min = prev_door->x - 5 + (rand() % 3);
+                    }
+                    if (new_room.x_max == 0){
+                        new_room.x_max = prev_door->x + 5 - (rand() % 3);
+                    }
+                    if (new_room.y_max == 0){
+                        new_room.y_max = new_room.y_min + 4 + (rand() % 5);
+                    }
+                    break;
+                case 1:
+                    new_room.x_min = prev_door->x + 1;
+                    if (new_room.x_max == 0){
+                        new_room.x_max = new_room.x_min + 4 + (rand() % 5);
+                    }
+                    if (new_room.y_min == 0){
+                        new_room.y_min = prev_door->y - 5 + (rand() % 3);
+                    }
+                    if (new_room.y_max == 0){
+                        new_room.y_max = prev_door->y + 5 - (rand() % 3);
+                    }
+                    break;
+                case 2:
+                    new_room.y_max = prev_door->y - 1;
+                    if (new_room.x_min == 0){
+                        new_room.x_min = prev_door->x - 5 + (rand() % 3);
+                    }
+                    if (new_room.x_max == 0){
+                        new_room.x_max = prev_door->x + 5 - (rand() % 3);
+                    }
+                    if (new_room.y_min == 0)
+                    {
+                        new_room.y_min = new_room.y_max - 4 - (rand() % 5);
+                    }
+                    break;
+                case 3:
+                    new_room.x_max = prev_door->x - 1;
+                    if (new_room.x_min == 0){
+                        new_room.x_min = new_room.x_max - 4 - (rand() % 5);
+                    }
+                    if (new_room.y_min == 0){
+                        new_room.y_min = prev_door->y - 5 + (rand() % 3);
+                    }
+                    if (new_room.y_max == 0){
+                        new_room.y_max = prev_door->y + 5 - (rand() % 3);
+                    }
+                    break;
+            }
 
-				}
-			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
-		}														//connecting rooms
-	else if (searchneardoor (tabdoor, *prevdoor, *doorcount) > 0)
-		{
-			directionindex = 0;
-			do
-				{
-					switch (prevdoor->direction)
-						{
-						case 0:
-							newroom.x_min = prevdoor->x - 3 + (rand () % 2);
-							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
-							newroom.y_min = prevdoor->y + 1;
-							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
-							break;
-						case 1:
-							newroom.x_min = prevdoor->x + 1;
-							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
-							newroom.y_min = prevdoor->y - 3 + (rand () % 2);
-							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
-							break;
-						case 2:
-							newroom.x_min = prevdoor->x - 3 + (rand () % 2);
-							newroom.x_max = newroom.x_min + 3 + (rand () % 4);
-							newroom.y_max = prevdoor->y - 1;
-							newroom.y_min = newroom.y_max - 3 - (rand () % 4);
-							break;
-						case 3:
-							newroom.x_max = prevdoor->x - 1;
-							newroom.x_min = newroom.x_max - 3 - (rand () % 4);
-							newroom.y_min = prevdoor->y - 3 + (rand () % 2);
-							newroom.y_max = newroom.y_min + 3 + (rand () % 4);
-							break;
-						}
-				}
-			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
-			do
-				{
-					newroom.num_door = rand () % 3 + 1;
-					for (int i = 0; i < 4; i++)
-						{
-							newroom.room_door[i] = -1;
-						}
-					newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
-					while (newroom.num_door > MAX_ROOM - *roomcount)
-						{
-							newroom.num_door--;
-							switch (newroom.num_door)
-								{
-								case 2:
-									randtamp = rand () % 4;
-									if (randtamp == (prevdoor->direction + 2) % 4)
-										{
-											randtamp = (randtamp + 1) % 4;
-										}
-									newroom.room_door[randtamp] = 1;
-									break;
-								case 3:
-									randtamp = rand () % 4;
-									if (randtamp == (prevdoor->direction + 2) % 4)
-										{
-											randtamp = (randtamp + 1) % 4;
-										}
-									newroom.room_door[randtamp] = 1;
-									randtamp2 = rand () % 4;
-									do
-										{
-											randtamp2 = (randtamp2 + 1) % 4;
-										}
-									while (randtamp2 !=
-												 (prevdoor->direction + 2) % 4
-												 && randtamp2 != randtamp);
-									newroom.room_door[randtamp2] = 1;
-									break;
-								}
-						}
-				}
-			while (confirmdoororientation (tabroom, newroom, *roomcount, *prevdoor)
-						 == 0);
-			for (int i = *doorcount; i < doornum + newroom.num_door - 1; i++)
-				{
-					tabdoor[i].roomNum1 = *roomcount;
-					tabdoor[i].roomNum2 = -1;
-					while (newroom.room_door[directionindex] != 1
-								 || directionindex == ((prevdoor->direction) + 2) % 4)
-						{
-							directionindex = (directionindex + 1) % 4;
-						}
-					tabdoor[i].direction = directionindex;
-					do
-						{
-							for (int i = 0; i < 4; i++)
-								{
-									newroom.room_door[i] = -1;
-								}
-							switch (tabdoor[i].direction)
-								{
-								case 0:
-									tabdoor[i].x =
-                                            newroom.x_min + 1 +
-                                            (rand () % (newroom.x_max - newroom.x_min - 1));
-									tabdoor[i].y = newroom.y_max + 1;
-									break;
-								case 1:
-									tabdoor[i].x = newroom.x_max + 1;
-									tabdoor[i].y =
-                                            newroom.y_min + 1 +
-                                            (rand () % (newroom.y_max - newroom.y_min - 1));
-									break;
-								case 2:
-									tabdoor[i].x =
-                                            newroom.x_min + 1 +
-                                            (rand () % (newroom.x_max - newroom.x_min - 1));
-									tabdoor[i].y = newroom.y_min - 1;
-									break;
-								case 3:
-									tabdoor[i].x = newroom.x_min - 1;
-									tabdoor[i].y =
-                                            newroom.y_min + 1 +
-                                            (rand () % (newroom.y_max - newroom.y_min - 1));
-									break;
-								}
-						}
-					while (confirmdoorloc
-								 (tabdoor, tabdoor[i], *doorcount, tabroom, *roomcount) == 0);
-					directionindex++;
-					(*doorcount)++;
-				}
-		}														//near rooms
-	else
-		{
-			directionindex = 0;
-			switch (prevdoor->direction)
-				{
-				case 0:
-					newroom.x_min = prevdoor->x - 4 + (rand () % 3);
-					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
-					newroom.y_min = prevdoor->y + 1;
-					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
-					break;
-				case 1:
-					newroom.x_min = prevdoor->x + 1;
-					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
-					newroom.y_min = prevdoor->y - 4 + (rand () % 3);
-					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
-					break;
-				case 2:
-					newroom.x_min = prevdoor->x - 4 + (rand () % 3);
-					newroom.x_max = newroom.x_min + 4 + (rand () % 5);
-					newroom.y_max = prevdoor->y - 1;
-					newroom.y_min = newroom.y_max - 4 - (rand () % 5);
-					break;
+        }
+        while (confirmOverlap(tab_room, new_room, *room_count) == 0);
+    }														//connecting rooms
+	else if (searchNearDoor (tab_door, *prev_door, *door_count) > 0){
+        direction_index = 0;
+        do{
+            switch (prev_door->direction){
+                case 0:
+                    new_room.x_min = prev_door->x - 3 + (rand() % 2);
+                    new_room.x_max = new_room.x_min + 3 + (rand() % 4);
+                    new_room.y_min = prev_door->y + 1;
+                    new_room.y_max = new_room.y_min + 3 + (rand() % 4);
+                    break;
+                case 1:
+                    new_room.x_min = prev_door->x + 1;
+                    new_room.x_max = new_room.x_min + 3 + (rand() % 4);
+                    new_room.y_min = prev_door->y - 3 + (rand() % 2);
+                    new_room.y_max = new_room.y_min + 3 + (rand() % 4);
+                    break;
+                case 2:
+                    new_room.x_min = prev_door->x - 3 + (rand() % 2);
+                    new_room.x_max = new_room.x_min + 3 + (rand() % 4);
+                    new_room.y_max = prev_door->y - 1;
+                    new_room.y_min = new_room.y_max - 3 - (rand() % 4);
+                    break;
 				case 3:
-					newroom.x_max = prevdoor->x - 1;
-					newroom.x_min = newroom.x_max - 4 - (rand () % 5);
-					newroom.y_min = prevdoor->y - 4 + (rand () % 3);
-					newroom.y_max = newroom.y_min + 4 + (rand () % 5);
-					break;
-				}
-			while (confirmoverlap (tabroom, newroom, *roomcount) == 0);
-			do
-				{
-					for (int i = 0; i < 4; i++)
-						{
-							newroom.room_door[i] = -1;
-						}
-					newroom.room_door[(prevdoor->direction + 2) % 4] = 1;
-					newroom.num_door = rand () % 3 + 2;
-					while (newroom.num_door > MAX_ROOM - *roomcount)
-						{
-							newroom.num_door--;
-						}
-					switch (newroom.num_door)
-						{
+                    new_room.x_max = prev_door->x - 1;
+                    new_room.x_min = new_room.x_max - 3 - (rand() % 4);
+                    new_room.y_min = prev_door->y - 3 + (rand() % 2);
+                    new_room.y_max = new_room.y_min + 3 + (rand() % 4);
+                    break;
+            }
+        }
+        while (confirmOverlap(tab_room, new_room, *room_count) == 0);
+        do{
+            new_room.num_door = rand() % 3 + 1;
+            for (int i = 0; i < 4; i++){
+                new_room.room_door[i] = -1;
+            }
+            new_room.room_door[(prev_door->direction + 2) % 4] = 1;
+            while (new_room.num_door > MAX_ROOM - *room_count){
+                new_room.num_door--;
+                switch (new_room.num_door){
+                    case 2:
+                        rand_tamp = rand() % 4;
+                        if (rand_tamp == (prev_door->direction + 2) % 4){
+                            rand_tamp = (rand_tamp + 1) % 4;
+                        }
+                        new_room.room_door[rand_tamp] = 1;
+                        break;
+                        case 3:
+                            rand_tamp = rand() % 4;
+                            if (rand_tamp == (prev_door->direction + 2) % 4){
+                                rand_tamp = (rand_tamp + 1) % 4;
+                            }
+                            new_room.room_door[rand_tamp] = 1;
+                            rand_tamp2 = rand() % 4;
+                            do{
+                                rand_tamp2 = (rand_tamp2 + 1) % 4;
+                            }while (rand_tamp2 !=(prev_door->direction + 2) % 4 && rand_tamp2 != rand_tamp);
+                            new_room.room_door[rand_tamp2] = 1;
+                            break;
+                }
+            }
+        }while (confirmDoorOrientation(tab_room, new_room, *room_count, *prev_door) == 0);
+			for (int i = *door_count; i < door_num + new_room.num_door - 1; i++){
+                tab_door[i].room_num1 = *room_count;
+                tab_door[i].room_num2 = -1;
+                while(new_room.room_door[direction_index]!=1 || direction_index==((prev_door->direction) + 2) % 4){
+                    direction_index = (direction_index + 1) % 4;
+                }
+                tab_door[i].direction = direction_index;
+                do{
+                    for (int j = 0; j < 4; j++){
+                        new_room.room_door[j] = -1;
+                    }
+                    switch (tab_door[i].direction){
+                        case 0:
+                            tab_door[i].x = new_room.x_min + 1 + (rand() % (new_room.x_max - new_room.x_min - 1));
+                            tab_door[i].y = new_room.y_max + 1;
+                            break;
+                        case 1:
+                            tab_door[i].x = new_room.x_max + 1;
+                            tab_door[i].y = new_room.y_min + 1 + (rand() % (new_room.y_max - new_room.y_min - 1));
+                            break;
 						case 2:
-							randtamp = rand () % 4;
-							if (randtamp == (prevdoor->direction + 2) % 4)
-								{
-									randtamp = (randtamp + 1) % 4;
-								}
-							newroom.room_door[randtamp] = 1;
-							break;
+                            tab_door[i].x = new_room.x_min + 1 + (rand() % (new_room.x_max - new_room.x_min - 1));
+                            tab_door[i].y = new_room.y_min - 1;
+                            break;
 						case 3:
-							randtamp = rand () % 4;
-							if (randtamp == (prevdoor->direction + 2) % 4)
-								{
-									randtamp = (randtamp + 1) % 4;
-								}
-							newroom.room_door[randtamp] = 1;
-							randtamp2 = rand () % 4;
-							do
-								{
-									randtamp2 = (randtamp2 + 1) % 4;
-								}
-							while (randtamp2 ==
-										 (prevdoor->direction + 2) % 4 || randtamp2 == randtamp);
-							newroom.room_door[randtamp2] = 1;
-							break;
-						case 4:
-							for (int i = 0; i < 4; i++)
-								{
-									newroom.room_door[i] = 1;
-								}
-						}
-				}
-			while (confirmdoororientation (tabroom, newroom, *roomcount, *prevdoor)
-						 == 0);
-			for (int i = *doorcount; i < doornum + newroom.num_door - 1; i++)
-				{
-					tabdoor[i].roomNum1 = *roomcount;
-					tabdoor[i].roomNum2 = -1;
-					while (newroom.room_door[directionindex] != 1
-								 || directionindex == ((prevdoor->direction) + 2) % 4)
-						{
-							directionindex = (directionindex + 1) % 4;
-						}
-					tabdoor[i].direction = directionindex;
-					do
-						{
-							switch (tabdoor[i].direction)
-								{
-								case 0:
-									tabdoor[i].x =
-                                            newroom.x_min + 1 +
-                                            (rand () % (newroom.x_max - newroom.x_min - 1));
-									tabdoor[i].y = newroom.y_max + 1;
-									break;
-								case 1:
-									tabdoor[i].x = newroom.x_max + 1;
-									tabdoor[i].y =
-                                            newroom.y_min + 1 +
-                                            (rand () % (newroom.y_max - newroom.y_min - 1));
-									break;
-								case 2:
-									tabdoor[i].x =
-                                            newroom.x_min + 1 +
-                                            (rand () % (newroom.x_max - newroom.x_min - 1));
-									tabdoor[i].y = newroom.y_min - 1;
-									break;
-								case 3:
-									tabdoor[i].x = newroom.x_min - 1;
-									tabdoor[i].y =
-                                            newroom.y_min + 1 +
-                                            (rand () % (newroom.y_max - newroom.y_min - 1));
-									break;
-								}
-						}
-					while (confirmdoorloc
-								 (tabdoor, tabdoor[i], *doorcount, tabroom, *roomcount) == 0);
-					(*doorcount)++;
-					directionindex++;
-				}
-		}
-
-	(*roomcount)++;
-	return newroom;
+                            tab_door[i].x = new_room.x_min - 1;
+                            tab_door[i].y = new_room.y_min + 1 + (rand() % (new_room.y_max - new_room.y_min - 1));
+                            break;
+                    }
+                }while(confirmDoorLock(tab_door,tab_door[i],*door_count,tab_room,*room_count)==0);
+					direction_index++;
+					(*door_count)++;
+            }
+    }														//near rooms
+	else{
+        direction_index = 0;
+        switch (prev_door->direction){
+            case 0:
+                new_room.x_min = prev_door->x - 4 + (rand() % 3);
+                new_room.x_max = new_room.x_min + 4 + (rand() % 5);
+                new_room.y_min = prev_door->y + 1;
+                new_room.y_max = new_room.y_min + 4 + (rand() % 5);
+                break;
+			case 1:
+                new_room.x_min = prev_door->x + 1;
+                new_room.x_max = new_room.x_min + 4 + (rand() % 5);
+                new_room.y_min = prev_door->y - 4 + (rand() % 3);
+                new_room.y_max = new_room.y_min + 4 + (rand() % 5);
+                break;
+			case 2:
+                new_room.x_min = prev_door->x - 4 + (rand() % 3);
+                new_room.x_max = new_room.x_min + 4 + (rand() % 5);
+                new_room.y_max = prev_door->y - 1;
+                new_room.y_min = new_room.y_max - 4 - (rand() % 5);
+                break;
+			case 3:
+                new_room.x_max = prev_door->x - 1;
+                new_room.x_min = new_room.x_max - 4 - (rand() % 5);
+                new_room.y_min = prev_door->y - 4 + (rand() % 3);
+                new_room.y_max = new_room.y_min + 4 + (rand() % 5);
+                break;
+        }while (confirmOverlap(tab_room, new_room, *room_count) == 0);
+        do{
+            for (int i = 0; i < 4; i++){
+                new_room.room_door[i] = -1;
+            }
+            new_room.room_door[(prev_door->direction + 2) % 4] = 1;
+            new_room.num_door = rand() % 3 + 2;
+            while (new_room.num_door > MAX_ROOM - *room_count){
+                new_room.num_door--;
+            }
+            switch (new_room.num_door){
+                case 2:
+                    rand_tamp = rand() % 4;
+                    if (rand_tamp == (prev_door->direction + 2) % 4){
+                        rand_tamp = (rand_tamp + 1) % 4;
+                    }
+                    new_room.room_door[rand_tamp] = 1;
+                    break;
+				case 3:
+                    rand_tamp = rand() % 4;
+                    if (rand_tamp == (prev_door->direction + 2) % 4){
+                        rand_tamp = (rand_tamp + 1) % 4;
+                    }
+                    new_room.room_door[rand_tamp] = 1;
+                    rand_tamp2 = rand() % 4;
+                    do{
+                        rand_tamp2 = (rand_tamp2 + 1) % 4;
+                    }
+                    while (rand_tamp2 == (prev_door->direction + 2) % 4 || rand_tamp2 == rand_tamp);
+                    new_room.room_door[rand_tamp2] = 1;
+                    break;
+                case 4:
+                    for (int i = 0; i < 4; i++){
+                        new_room.room_door[i] = 1;
+                    }
+            }
+        }while (confirmDoorOrientation(tab_room, new_room, *room_count, *prev_door) == 0);
+			for (int i = *door_count; i < door_num + new_room.num_door - 1; i++){
+                tab_door[i].room_num1 = *room_count;
+                tab_door[i].room_num2 = -1;
+                while (new_room.room_door[direction_index] != 1 || direction_index == ((prev_door->direction) + 2) % 4){
+                    direction_index = (direction_index + 1) % 4;
+                }
+                tab_door[i].direction = direction_index;
+                do{
+                    switch (tab_door[i].direction){
+                        case 0:
+                            tab_door[i].x = new_room.x_min + 1 + (rand() % (new_room.x_max - new_room.x_min - 1));
+                            tab_door[i].y = new_room.y_max + 1;
+                            break;
+                        case 1:
+                            tab_door[i].x = new_room.x_max + 1;
+                            tab_door[i].y = new_room.y_min + 1 + (rand() % (new_room.y_max - new_room.y_min - 1));
+                            break;
+                        case 2:
+                            tab_door[i].x = new_room.x_min + 1 + (rand() % (new_room.x_max - new_room.x_min - 1));
+                            tab_door[i].y = new_room.y_min - 1;
+                            break;
+						case 3:
+                            tab_door[i].x = new_room.x_min - 1;
+                            tab_door[i].y = new_room.y_min + 1 + (rand() % (new_room.y_max - new_room.y_min - 1));
+                            break;
+                    }
+                }while(confirmDoorLock(tab_door,tab_door[i],*door_count,tab_room,*room_count)==0);
+                (*door_count)++;
+                direction_index++;
+            }
+    }
+	(*room_count)++;
+	return new_room;
 }
 
-room
-createmainroom ()
-{
-	room froom;
-	for (int j = 0; j < 4; j++)
-		{
-			froom.room_door[j] = 1;
-		}
-	froom.num_door = 4;
-	froom.x_min = 1 * -4;
-	froom.x_max = 1 * 5;
-	froom.y_min = 1 * -4;
-	froom.y_max = 1 * 5;
+Room createMainRoom (){
+	Room f_room;
+	for (int j = 0; j < 4; j++){
+        f_room.room_door[j] = 1;
+    }
+    f_room.num_door = 4;
+    f_room.x_min = 1 * -4;
+    f_room.x_max = 1 * 5;
+    f_room.y_min = 1 * -4;
+    f_room.y_max = 1 * 5;
 
-	return froom;
+	return f_room;
 }
 
-void
-createmaindoor (door * tabdoor)
-{
-	tabdoor[0].x = 0;
-	tabdoor[0].y = 6;
-	tabdoor[0].roomNum1 = 0;
-	tabdoor[0].roomNum2 = -1;
-	tabdoor[0].direction = 0;
-	tabdoor[1].x = 6;
-	tabdoor[1].y = 0;
-	tabdoor[1].roomNum1 = 0;
-	tabdoor[1].roomNum2 = -1;
-	tabdoor[1].direction = 1;
-	tabdoor[2].x = 0;
-	tabdoor[2].y = -5;
-	tabdoor[2].roomNum1 = 0;
-	tabdoor[2].roomNum2 = -1;
-	tabdoor[2].direction = 2;
-	tabdoor[3].x = -5;
-	tabdoor[3].y = 0;
-	tabdoor[3].roomNum1 = 0;
-	tabdoor[3].roomNum2 = -1;
-	tabdoor[3].direction = 3;
+void createMainDoor (Door * tab_door){
+    tab_door[0].x = 0;
+    tab_door[0].y = 6;
+    tab_door[0].room_num1 = 0;
+    tab_door[0].room_num2 = -1;
+    tab_door[0].direction = 0;
+    tab_door[1].x = 6;
+    tab_door[1].y = 0;
+    tab_door[1].room_num1 = 0;
+    tab_door[1].room_num2 = -1;
+    tab_door[1].direction = 1;
+    tab_door[2].x = 0;
+    tab_door[2].y = -5;
+    tab_door[2].room_num1 = 0;
+    tab_door[2].room_num2 = -1;
+    tab_door[2].direction = 2;
+    tab_door[3].x = -5;
+    tab_door[3].y = 0;
+    tab_door[3].room_num1 = 0;
+    tab_door[3].room_num2 = -1;
+    tab_door[3].direction = 3;
 }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//enemy fonction
+//enemy function
 double calculateDistance(Position pos1, Position pos2) {
     int dx = pos2.x - pos1.x;
     int dy = pos2.y - pos1.y;
     return sqrt(dx*dx + dy*dy);
 }
 
-int checkRange(Enemy* a, hero* player){
+int checkRange(Enemy* a, Hero* player){
     double distance = calculateDistance(a->coordinates, player->coordinates);
     printf("Distance : %f\n", distance);
     switch (a->type) {
@@ -1467,10 +1350,10 @@ int checkRange(Enemy* a, hero* player){
             }
         case FLYING:
             if (distance != a->range){
-                return 0;
+                return 1;
             }
             else {
-                return 1;
+                return 0;
             }
     }
 }
@@ -1530,7 +1413,7 @@ Enemy defEnemy(Enemy a){
     }
 }
 
-void mobOrientation(Enemy* a, hero* player){
+void mobOrientation(Enemy* a, Hero* player){
     if (player->coordinates.x > a->coordinates.x && player->coordinates.y > a->coordinates.y){
         if(a->coordinates.x - player->coordinates.x > a->coordinates.y - player->coordinates.y){
             a->orientation = 1;
@@ -1561,10 +1444,8 @@ void mobOrientation(Enemy* a, hero* player){
     }
 }
 
-void moveMob(Enemy* a, hero* player, room* b){
-    int x = 0;
-    int y = 0;
-    printf("hero Position : %d %d\n", player->coordinates.x, player->coordinates.y);
+void moveMob(Enemy* a, Hero* player, Room* b){
+    printf("Hero Position : %d %d\n", player->coordinates.x, player->coordinates.y);
     switch (a->type) {
         case ALL_IN:
             while (checkRange(a, player)) {
@@ -1607,7 +1488,7 @@ void moveMob(Enemy* a, hero* player, room* b){
     }
 }
 
-void enemySpawn(int number, room* b, int* seed){
+void enemySpawn(int number, Room* b, int* seed){
     int x;
     b->tab_enemy = malloc(sizeof(Enemy)*number);
     if (b->tab_enemy == NULL){
@@ -1647,26 +1528,26 @@ void enemySpawn(int number, room* b, int* seed){
     }
 }
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//think fonction
-void stuffSpawn(room* a, FILE* Object, FILE* Blade, FILE* Armor, int* seed){
+//think function
+void stuffSpawn(Room* a, FILE* Object, FILE* Blade, FILE* Armor, int* seed){
     a->tab_object = malloc(sizeof(Object)*a->nbr_object);
     a->tab_blade = malloc(sizeof(Weapon)*a->nbr_blade);
     a->tab_armor = malloc(sizeof(Armor)*a->nbr_armor);
 
     for (int i=0; i<a->nbr_object ; i++){
-        a->tab_object[i] = search_object(rand()%14,Object);
+        a->tab_object[i] = searchObject(rand() % 14, Object);
         a->tab_object[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
         a->tab_object[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
 
     for (int i=0; i<a->nbr_blade ; i++){
-        a->tab_blade[i] = search_blade(rand()%7,Blade);
+        a->tab_blade[i] = searchBlade(rand() % 7, Blade);
         a->tab_blade[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
         a->tab_blade[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
 
     for (int i=0; i<a->nbr_armor ; i++){
-        a->tab_armor[i] = search_stuff(rand()%6,Armor);
+        a->tab_armor[i] = searchStuff(rand() % 6, Armor);
         a->tab_armor[i].coordinates.x = rand() % (a->x_max - a->x_min) + a->x_min;
         a->tab_armor[i].coordinates.y = rand() % (a->y_max - a->y_min) + a->y_min;
     }
@@ -1674,114 +1555,113 @@ void stuffSpawn(room* a, FILE* Object, FILE* Blade, FILE* Armor, int* seed){
     }
 
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
-//display fonction
-void display_menu(int screen_length,int screen_width,int menu_cursor,WINDOW* background){
+//display function
+void displayMenu(int screen_length, int screen_width, int menu_cursor, WINDOW* background){
     clear();
     refresh();
-    background=newwin(screen_width,screen_length,0,0);
-    wbkgd(background,COLOR_PAIR(1));  
+    background = newwin(screen_width, screen_length, 0, 0);
+    wbkgd(background, COLOR_PAIR(1));
     wrefresh(background);
 
     attron(COLOR_PAIR(1));
-    mvprintw(2,screen_length/2-6,"   in menu   ");
+    mvprintw(2, screen_length/2-6, "   in menu   ");
 
-    mvprintw(4,screen_length/2-6,"    start    ");
-    mvprintw(6,screen_length/2-6,"continue game");
-    mvprintw(8,screen_length/2-6,"   setting   ");
-    mvprintw(screen_width-2,3,"exit");
+    mvprintw(4, screen_length/2-6, "    start    ");
+    mvprintw(6, screen_length/2-6, "continue game");
+    mvprintw(8, screen_length/2-6, "   setting   ");
+    mvprintw(screen_width-2, 3, "exit");
 
     attron(COLOR_PAIR(2));
     switch(menu_cursor){
         case 0:
-            mvprintw(4,screen_length/2-6,"    start    ");
+            mvprintw(4, screen_length/2-6, "    start    ");
             break;
         case 1:
-            mvprintw(6,screen_length/2-6,"continue game");
+            mvprintw(6, screen_length/2-6, "continue game");
             break;
         case 2:
-            mvprintw(8,screen_length/2-6,"  do nothing ");
-                                         
+            mvprintw(8, screen_length/2-6, "  do nothing ");
             break;
         case 3:
-            mvprintw(screen_width-2,3,"exit");
+            mvprintw(screen_width-2, 3, "exit");
             break;
-        }
-    attron(COLOR_PAIR(1));
-    move(screen_width+10,screen_length+10);
-    refresh();
     }
-
-void display_name_menu(int screen_length,int screen_width,WINDOW* background,char* name){
+    attron(COLOR_PAIR(1));
+    move(screen_width+10, screen_length+10);
     refresh();
-    background=newwin(screen_width-4,screen_length,4,0);
-    wbkgd(background,COLOR_PAIR(1));  
+}
+
+void displayNameMenu(int screen_length, int screen_width, WINDOW* background, char* name){
+    refresh();
+    background = newwin(screen_width-4, screen_length, 4, 0);
+    wbkgd(background, COLOR_PAIR(1));
     wrefresh(background);
 
-    mvprintw(4,screen_length/2-11,"enter your initials");
-    move(6,screen_length/2-11);
+    mvprintw(4, screen_length/2-11, "enter your initials");
+    move(6, screen_length/2-11);
     for(int i=0;i<3;i++){
         if (name[i]==0){
             printw("_");
-            }
-        else{
-            printw("%c",name[i]);
-            }
-        printw(" ");
         }
-    attron(COLOR_PAIR(1));
-    move(screen_width+10,screen_length+10);
-    refresh();
+        else{
+            printw("%c", name[i]);
+        }
+        printw(" ");
     }
+    attron(COLOR_PAIR(1));
+    move(screen_width+10, screen_length+10);
+    refresh();
+}
 
-int search_save(char* name,FILE* fichier){
-	rewind(fichier);
-    char c=getc(fichier);
+int searchSave(char* name, FILE* file){
+	rewind(file);
+    char c=getc(file);
 	while(c != EOF){
 		if(c=='@'){
-            int name_pareil=1;
+            int identical_name=1;
             for(int i=0;i<3;i++){
-                c=getc(fichier);
+                c=getc(file);
                 if(c != name[i]){
                     i=3;
-                    name_pareil=0;
-                    }
-                }
-            if(name_pareil){
-                return 1;
+                    identical_name=0;
                 }
             }
-		c=getc(fichier);
-		}
+            if(identical_name){
+                return 1;
+            }
+        }
+		c=getc(file);
+    }
     return 0;
-    }
+}
 
-void display_seed_menu(int screen_length,int screen_width,WINDOW* background,int seed,int count){
-    mvprintw(10+2*count,10,"%d",seed);
+void displaySeedMenu(int screen_length, int screen_width, WINDOW* background, int seed, int count){
+    mvprintw(10+2*count, 10, "%d", seed);
     refresh();
-    }
+}
 
-void display_name_load_menu(int screen_length,int screen_width,WINDOW* background,char* name,int load_menu_cursor){
-    display_name_menu(screen_length,screen_width,background,name);
+void displayNameLoadMenu(int screen_length, int screen_width, WINDOW* background, char* name, int load_menu_cursor){
+    displayNameMenu(screen_length, screen_width, background, name);
 
     //browse the different backups and display their names
     /*
     
     */
-    }
+}
 
-void display_game(int screen_length,int screen_width,hero player,WINDOW* background, time_t timer,int time_pause,int time_jouer,int time_to_play,int* end){
+void displayGame(int screen_length, int screen_width, Hero player, WINDOW* background, time_t timer, int time_pause, int time_play, int time_to_play, int* end){
     clear();
     refresh();
-    background=newwin(screen_width,screen_length,0,0);
-    wbkgd(background,COLOR_PAIR(3));  
+    background = newwin(screen_width, screen_length, 0, 0);
+    wbkgd(background, COLOR_PAIR(3));
     wrefresh(background);
 
     time_t time_now=time(NULL);
-    int time_total=time_now-timer-time_pause+time_jouer;
+    int time_total= time_now - timer - time_pause + time_play;
 
     attron(COLOR_PAIR(3));
-    mvprintw(2,1,"Life: %03d   ",player.life);
-    mvprintw(4,1,"Time: %02d:%02d ",time_to_play-(time_total/60)-1,59-(time_total%60));
+    mvprintw(2, 1, "Life: %03d   ", player.life);
+    mvprintw(4, 1, "Time: %02d:%02d ", time_to_play-(time_total/60)-1, 59-(time_total%60));
 
     if(screen_length>25){
         //life 
@@ -1791,16 +1671,16 @@ void display_game(int screen_length,int screen_width,hero player,WINDOW* backgro
         for(int i=0;i<screen_length-14 && i<50;i++){
             if(i>(player.life/(player.max_life*1.0) * min(screen_length-14,50))){
                 attron(COLOR_PAIR(6));
-                }
-            printw(" ");
             }
+            printw(" ");
+        }
 
         //time
         if(time_total+2>time_to_play*60){
             *end=1;
             attron(COLOR_PAIR(7));
             mvprintw(4,7,"00:00");
-            }
+        }
 
         attron(COLOR_PAIR(5));
         move(4,13);
@@ -1808,170 +1688,170 @@ void display_game(int screen_length,int screen_width,hero player,WINDOW* backgro
         for(int i=0;i<screen_length-14 && i<50;i++){
             if(i>(1-time_total/(time_to_play*60.0))*min(screen_length-14,50)-1){
                 attron(COLOR_PAIR(6));
-                }
-            printw(" ");
             }
+            printw(" ");
         }
+    }
 
     attron(COLOR_PAIR(3));
-    mvprintw(1,screen_length-66,"materiel: %04d     level: %03d     XP: %04d     inventory: %02d/15",player.score, player.level,player.XP, player.nbr_object_inventory);
-    mvprintw(3,screen_length-66,"Weapon: %s  %d damage  %d range",player.blade.name, player.blade.dmg, player.blade.range);
+    mvprintw(1,screen_length-66,"materiel: %04d     level: %03d     XP: %04d     inventory: %02d/15",
+             player.score,player.level,player.XP, player.nbr_object_inventory);
+    mvprintw(3,screen_length-66,"Weapon: %s  %d damage  %d range",
+             player.blade.name,player.blade.dmg,player.blade.range);
     mvprintw(5,screen_length-66,"Stuff: %s  %d armor",player.stuff.name, player.stuff.shield);
     move(screen_width+10,screen_length+10);
     refresh();
-    }
+}
 
-void display_donjon(int screen_length,int screen_width,hero player,int doorcount,door* tabdoor,int roomcount,room* tabroom, WINDOW* donjon){
+void displayDungeon(int screen_length, int screen_width, Hero player, int door_count, Door* tab_door, int room_count, Room* tab_room, WINDOW* dungeon){
     //refresh();
-    donjon=newwin(screen_width-8,screen_length-6,6,3);
-    wbkgd(donjon,COLOR_PAIR(6));
-    wrefresh(donjon);
+    dungeon=newwin(screen_width - 8, screen_length - 6, 6, 3);
+    wbkgd(dungeon, COLOR_PAIR(6));
+    wrefresh(dungeon);
 
     int local_x;
     int local_y;
 
-    //display room
-    for(int i=0;i<roomcount;i++){
-        //display room background
-        for(int j=0;j<=absolute_value(tabroom[i].y_max - tabroom[i].y_min); j++){
-            for(int k=0;k<=absolute_value(tabroom[i].x_max - tabroom[i].x_min); k++){
-                local_x= player.coordinates.x - tabroom[i].x_max + k;
-                local_y=-(player.coordinates.y - tabroom[i].y_max + j);
-                if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
+    //display Room
+    for(int i=0; i < room_count; i++){
+        //display Room background
+        for(int j=0; j <= absoluteValue(tab_room[i].y_max - tab_room[i].y_min); j++){
+            for(int k=0; k <= absoluteValue(tab_room[i].x_max - tab_room[i].x_min); k++){
+                local_x = player.coordinates.x - tab_room[i].x_max + k;
+                local_y = -(player.coordinates.y - tab_room[i].y_max + j);
+                if(absoluteValue(local_x)<=(screen_length-6)/2 && absoluteValue(local_y)<=(screen_width - 8)/2){
                     attron(COLOR_PAIR(10));
-                    mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x," ");
+                    mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, " ");
                     refresh();
-                    }
                 }
             }
+        }
 
         //display enemy
-        for(int l=0;l<tabroom[i].nbr_enemy;l++){
-            local_x=player.coordinates.x-tabroom[i].tab_enemy[l].coordinates.x;
-            local_y=-(player.coordinates.y-tabroom[i].tab_enemy[l].coordinates.y);
-            if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
+        for(int l=0; l < tab_room[i].nbr_enemy; l++){
+            local_x = player.coordinates.x - tab_room[i].tab_enemy[l].coordinates.x;
+            local_y = -(player.coordinates.y - tab_room[i].tab_enemy[l].coordinates.y);
+            if(absoluteValue(local_x) <= (screen_length - 6)/2 && absoluteValue(local_y) <= (screen_width - 8)/2){
                 attron(COLOR_PAIR(11));
-                mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x,"E");
+                mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, "E");
                 refresh();
-                }
             }
-
-        //display objetc
-        for(int l=0;l<tabroom[i].nbr_object;l++){
-            local_x=player.coordinates.x-tabroom[i].tab_object[l].coordinates.x;
-            local_y=-(player.coordinates.y-tabroom[i].tab_object[l].coordinates.y);
-            if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
-                attron(COLOR_PAIR(12));
-                mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x,"O");
-                refresh();
-                }
-            }
-        //display armor
-        for(int l=0;l<tabroom[i].nbr_armor;l++){
-            local_x=player.coordinates.x-tabroom[i].tab_armor[l].coordinates.x;
-            local_y=-(player.coordinates.y-tabroom[i].tab_armor[l].coordinates.y);
-            if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
-                attron(COLOR_PAIR(13));
-                mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x,"A");
-                }
-            }
-        //display blade
-        for(int l=0;l<tabroom[i].nbr_blade;l++){
-            local_x=player.coordinates.x-tabroom[i].tab_blade[l].coordinates.x;
-            local_y=-(player.coordinates.y-tabroom[i].tab_blade[l].coordinates.y);
-            if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
-                attron(COLOR_PAIR(14));
-                mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x,"W");
-                refresh();
-                }
-            }
-      }
-    //display door
-    for(int i=0;i<doorcount;i++){
-      int local_x=player.coordinates.x-tabdoor[i].x;
-      int local_y=-(player.coordinates.y-tabdoor[i].y);
-      if(absolute_value(local_x) <= (screen_length-6)/2 && absolute_value(local_y) <= (screen_width-8)/2){
-        attron(COLOR_PAIR(6));
-        mvprintw(6+(screen_width-8)/2-local_y,3+(screen_length-6)/2-local_x,"P");
-        refresh();
         }
-      }
 
-    display_hit(player,screen_length,screen_width);
+        //display object
+        for(int l=0; l < tab_room[i].nbr_object; l++){
+            local_x = player.coordinates.x - tab_room[i].tab_object[l].coordinates.x;
+            local_y = -(player.coordinates.y - tab_room[i].tab_object[l].coordinates.y);
+            if(absoluteValue(local_x) <= (screen_length - 6)/2 && absoluteValue(local_y) <= (screen_width - 8)/2){
+                attron(COLOR_PAIR(12));
+                mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, "O");
+                refresh();
+            }
+        }
+        //display armor
+        for(int l=0; l < tab_room[i].nbr_armor; l++){
+            local_x = player.coordinates.x - tab_room[i].tab_armor[l].coordinates.x;
+            local_y = -(player.coordinates.y - tab_room[i].tab_armor[l].coordinates.y);
+            if(absoluteValue(local_x) <= (screen_length - 6)/2 && absoluteValue(local_y) <= (screen_width - 8)/2){
+                attron(COLOR_PAIR(13));
+                mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, "A");
+            }
+        }
+        //display blade
+        for(int l=0; l < tab_room[i].nbr_blade; l++){
+            local_x = player.coordinates.x - tab_room[i].tab_blade[l].coordinates.x;
+            local_y = -(player.coordinates.y - tab_room[i].tab_blade[l].coordinates.y);
+            if(absoluteValue(local_x) <= (screen_length - 6)/2 && absoluteValue(local_y) <= (screen_width - 8)/2){
+                attron(COLOR_PAIR(14));
+                mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, "W");
+                refresh();
+            }
+        }
+    }
+    //display Door
+    for(int i=0; i < door_count; i++){
+        local_x = player.coordinates.x - tab_door[i].x;
+        local_y = -(player.coordinates.y - tab_door[i].y);
+        if(absoluteValue(local_x) <= (screen_length - 6) / 2 && absoluteValue(local_y) <= (screen_width - 8) / 2){
+            attron(COLOR_PAIR(6));
+            mvprintw(6+(screen_width-8)/2-local_y, 3+(screen_length-6)/2-local_x, "P");
+            refresh();
+        }
+    }
 
-    //display hero
+    displayHit(player, screen_length, screen_width);
+
+    //display Hero
     attron(COLOR_PAIR(10));
-    mvprintw(6+(screen_width-8)/2,3+(screen_length-6)/2,"&");
+    mvprintw(6+(screen_width-8)/2, 3+(screen_length-6)/2, "&");
     refresh();
     }
 
-void display_inventory_menu(int screen_length,int screen_width,hero player,WINDOW* donjon,int inventory_cursor){
+void displayInventoryMenu(int screen_length, int screen_width, Hero player, WINDOW* dungeon, int inventory_cursor){
     //window start in 6 3
-    donjon=newwin(screen_width-8,screen_length-6,6,3);
-    wbkgd(donjon,COLOR_PAIR(8));
-    wrefresh(donjon);
+    dungeon = newwin(screen_width - 8, screen_length - 6, 6, 3);
+    wbkgd(dungeon, COLOR_PAIR(8));
+    wrefresh(dungeon);
 
     attron(COLOR_PAIR(8));
-    mvprintw(7,4,"inventory");
+    mvprintw(7, 4, "inventory");
     for (int i=0;i<3;i++){
         for(int j=0;j<5;j++){
-
             for(int k=0;k<7;k++){
                 if(inventory_cursor==j+5*i){
                     attron(COLOR_PAIR(9));
-                    }
+                }
                 else if(player.nbr_object_inventory>j+5*i){
                     attron(COLOR_PAIR(3));
-                    }
+                }
                 else{
                     attron(COLOR_PAIR(6));
-                    }
-                //x=start_window+2+nbr_object_raw*lenght_object
+                }
+                //x=start_window+2+nbr_object_raw*length_object
                 //y=start_window+2+nbr_object_col*width_object
-                mvprintw(9+k+(i*9),6+(22*j),"                    ");
+                mvprintw(9+k+(i*9), 6+(22*j), "                    ");
 
                 attron(COLOR_PAIR(8));
                 printw("  ");
-                }
-
+            }
             if(player.nbr_object_inventory>j+5*i){
                 if(inventory_cursor==j+5*i){
                     attron(COLOR_PAIR(9));
-                    }
+                }
                 else{
                     attron(COLOR_PAIR(3));
-                    }
-                //name objet
-                mvprintw(9+0+(i*9),6+(22*j),"  %s",player.inventory[j+5*i].name);
-                mvprintw(9+2+(i*9),6+(22*j),"  %d / %d",player.inventory[j+5*i].stack,player.inventory[j+5*i].max_stack);
+                }
+                //name object
+                mvprintw(9+0+(i*9), 6+(22*j), "  %s", player.inventory[j+5*i].name);
+                mvprintw(9+2+(i*9), 6+(22*j), "  %d / %d", player.inventory[j+5*i].stack, player.inventory[j+5*i].max_stack);
 
                 switch (player.inventory[j+5*i].what_augmentation){
                     case 0:
-                        mvprintw(9+4+(i*9),6+(22*j),"  no buff");
+                        mvprintw(9+4+(i*9), 6+(22*j), "  no buff");
                         break;
                     case 1:
-                        mvprintw(9+4+(i*9),6+(22*j),"  +%d life",player.inventory[j+5*i].augmentation);
+                        mvprintw(9+4+(i*9), 6+(22*j), "  +%d life",player.inventory[j+5*i].augmentation);
                         break;
                     case 2:
-                        mvprintw(9+4+(i*9),6+(22*j),"  +%d strength",player.inventory[j+5*i].augmentation);
+                        mvprintw(9+4+(i*9), 6+(22*j), "  +%d strength",player.inventory[j+5*i].augmentation);
                         break;
                     case 3:
-                        mvprintw(9+4+(i*9),6+(22*j),"  +%d armor",player.inventory[j+5*i].augmentation);
+                        mvprintw(9+4+(i*9), 6+(22*j), "  +%d armor",player.inventory[j+5*i].augmentation);
                         break;
                     case 4:
-                        mvprintw(9+4+(i*9),6+(22*j),"  +%d weapon",player.inventory[j+5*i].augmentation);
+                        mvprintw(9+4+(i*9), 6+(22*j), "  +%d weapon",player.inventory[j+5*i].augmentation);
                         break;
                     case 5:
-                        mvprintw(9+4+(i*9),6+(22*j),"  +%d materials ",player.inventory[j+5*i].augmentation);
+                        mvprintw(9+4+(i*9), 6+(22*j), "  +%d materials ",player.inventory[j+5*i].augmentation);
                         break;
-                    }
-                    refresh();
                 }
+                    refresh();
             }
         }
+    }
     attron(COLOR_PAIR(9));
     refresh();
-    }
+}
 ///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
 
 int main(void){
@@ -1987,49 +1867,49 @@ int main(void){
     keypad(stdscr, TRUE);
     
     //create size screen
-    int screen_length=130; //130
-    int screen_width=40;  //40
-    if (screen_length<25 || screen_width<25){
+    int screen_length = 130; //130
+    int screen_width = 40;  //40
+    if (screen_length < 25 || screen_width < 25){
         printf("error screen size");
         exit(1);
-        }
-    if(has_colors()==FALSE && can_change_color()==FALSE){
+    }
+    if(has_colors() == FALSE && can_change_color() == FALSE){
         printf("terminal doesn't support colors");
         exit(1);
-        }
-    WINDOW *background,*donjon;
+    }
+    WINDOW *background = 0,*dungeon = 0;
 
     
-    FILE* fichier=NULL;
-    fichier=fopen("save.txt","r+");
-    if(fichier==NULL){
-	    fichier=fopen("save.txt","w+");
+    FILE* file = NULL;
+    file = fopen("save.txt", "r+");
+    if(file == NULL){
+        file = fopen("save.txt", "w+");
     }
-    FILE* fichier_blade=NULL;
-    fichier_blade=fopen("blade.txt","r");
-    if(fichier_blade==NULL){
+    FILE* blade_file = NULL;
+    blade_file = fopen("blade.txt", "r");
+    if(blade_file == NULL){
         printf("error txt doesn't exist");
         exit(1);
     }
-    FILE* fichier_stuff=NULL;
-    fichier_stuff=fopen("Armor.txt","r");
-    if(fichier_stuff==NULL){
+    FILE* stuff_file = NULL;
+    stuff_file = fopen("Armor.txt", "r");
+    if(stuff_file == NULL){
         printf("error txt doesn't exist");
         exit(1);
     }
-    FILE* fichier_object=NULL;
-    fichier_object=fopen("Object.txt","r");
-    if(fichier_object==NULL){
+    FILE* object_file = NULL;
+    object_file=fopen("Object.txt", "r");
+    if(object_file == NULL){
         printf("error txt doesn't exist");
         exit(1);
     }
  
     //init loop to play
-    int in_menu=1;
-    int end=0;
-    int in_game=0;
-    int in_pause=0;
-    int in_inventory=0;
+    int in_menu = 1;
+    int end = 0;
+    int in_game = 0;
+    int in_pause = 0;
+    int in_inventory = 0;
 
     //create color
     start_color();
@@ -2048,7 +1928,7 @@ int main(void){
     init_pair(1,COLOR_WHITE,COLOR_BLUE);
     //select menu
     init_pair(2,COLOR_WHITE,COLOR_RED);
-    //background game and baground item
+    //background game and background item
     init_pair(3,COLOR_WHITE,COLOR_BEIGE);
     //life
     init_pair(4,COLOR_WHITE,COLOR_GREEN);
@@ -2064,9 +1944,9 @@ int main(void){
     init_pair(9,COLOR_WHITE,COLOR_RED);
 
 //change color
-    //room background
+    //Room background
     init_pair(10, COLOR_WHITE, COLOR_BEIGE_LIGHT);
-    //ennemy
+    //enemy
     init_pair(11,COLOR_WHITE,COLOR_RED);
     //object
     init_pair(12,COLOR_WHITE,COLOR_GREEN);
@@ -2081,175 +1961,173 @@ int main(void){
     init_pair(16,COLOR_WHITE,COLOR_BLACK);
 
     //menu
-    int menu_cursor=0;
+    int menu_cursor = 0;
     
     //create player
-    hero player;
-    int inventory_cursor=0;
+    Hero player;
+    int inventory_cursor = 0;
     //init name
     char name[4];
     int seed;
     
     //key player
-    int key_exit=27;
-    int key_enter=10;
-    int key_inventory='0';
-    int key_delete='*';
-    int key_sup_text=263;
-    int moove_up=KEY_UP;
-    int moove_down=KEY_DOWN;
-    int moove_left=KEY_LEFT;
-    int moove_right=KEY_RIGHT;
-    int key_fight='a';
+    int key_exit = 27;
+    int key_enter = 10;
+    int key_inventory = '0';
+    int key_delete = '*';
+    int key_sup_text = 263;
+    int move_up = KEY_UP;
+    int move_down = KEY_DOWN;
+    int move_left = KEY_LEFT;
+    int move_right = KEY_RIGHT;
+    int key_fight = 'a';
     // ...
     
-    //init room
-    int maxroom= MAX_ROOM;
-    int roomcount= 0;
-    int doorcount=0;
-    room *tabroom;
-    door *tabdoor;
-    tabdoor = malloc(sizeof(door) * MAX_ROOM * 4);
-    if (tabdoor == NULL) {
+    //init Room
+    int max_room = MAX_ROOM;
+    int room_count = 0;
+    int door_count = 0;
+    Room *tab_room;
+    Door *tab_door;
+    tab_door = malloc(sizeof(Door) * MAX_ROOM * 4);
+    if (tab_door == NULL) {
         exit(1);
-        }
-    tabroom = malloc(maxroom * sizeof(room));
-    if (tabroom == NULL) {
+    }
+    tab_room = malloc(max_room * sizeof(Room));
+    if (tab_room == NULL) {
         exit(1);
-        }
+    }
     
     //init timer
-    time_t timer=0;
-    int time_pause=0;
-    int time_jouer=0;
+    time_t timer = 0;
+    int time_pause = 0;
+    int time_play = 0;
     time_t time_start_pause;
-    int time_to_play=1;
+    int time_to_play = 1;
     
     while(in_menu){
         //display menu
-        display_menu(screen_length,screen_width,menu_cursor,background);
+        displayMenu(screen_length, screen_width, menu_cursor, background);
         
         int test1=getch();
         //choose menu button
         //press enter
         if(test1==key_enter){
-            int name_complet=0;
-            int Exit=0;
-
+            int complete_name = 0;
+            int Exit = 0;
             //init name
-            name[0]=0;
-            name[1]=0;
-            name[2]=0;
-            name[3]='\0';
+            name[0] = 0;
+            name[1] = 0;
+            name[2] = 0;
+            name[3] = '\0';
 
-            int avancement=0;
-            int load_menu_cursor=0;
+            int advancement = 0;
+            int load_menu_cursor = 0;
             //start the game
             switch(menu_cursor){
                 case 0:
-                    name_complet=0;
-                    Exit=0;
-                    avancement=0;
+                    complete_name = 0;
+                    Exit = 0;
+                    advancement = 0;
                     
-                    while(!name_complet && !Exit){
-                        display_name_menu(screen_length,screen_width,background,name);
-                        
+                    while(!complete_name && !Exit){
+                        displayNameMenu(screen_length, screen_width, background, name);
                         test1=getch();
-                        if (test1==key_exit){
-                            //key echap
-                            Exit=1;
-                            }
-                        else if (test1==key_enter && avancement>2){
-                            name_complet=1;
-                            }
-                        else if (test1==key_sup_text && avancement>0){
-                            avancement--;
-                            name[avancement]=0;
-                            }
+                        if (test1 == key_exit){
+                            //key esc
+                            Exit = 1;
+                        }
+                        else if (test1 == key_enter && advancement > 2){
+                            complete_name=1;
+                        }
+                        else if (test1 == key_sup_text && advancement > 0){
+                            advancement--;
+                            name[advancement] = 0;
+                        }
                         //recover first name letter
                         else if ((48<=test1 && test1<=59) || (97<=test1 && test1<=122) || (65<=test1 && test1<=90)){
-                            name[avancement]=test1;
-                            avancement++;
-                            }
+                            name[advancement] = test1;
+                            advancement++;
                         }
-
-                    if (name_complet){
-                        int count=0;
-                        mvprintw(8,10,"Enter your seed");
+                    }
+                    if (complete_name){
+                        int count  =0;
+                        mvprintw(8, 10, "Enter your seed");
                         refresh();
                         do{
                         scanf("%d",&seed);
-                        display_seed_menu(screen_length,screen_width,background,seed,count);
+                        displaySeedMenu(screen_length, screen_width, background, seed, count);
                         count++;
-                        }while(seed>=10000000000 || seed<0);
+                        }while(seed >= 1000000000 || seed < 0);
 
                         srand(seed);
 
-                        in_game=1;
-                        Exit=0;
-                        end=0;
-                        player=build_hero(fichier_blade,fichier_stuff);
+                        in_game = 1;
+                        Exit = 0;
+                        end = 0;
+                        player = buildHero(blade_file, stuff_file);
 
-                        roomcount=1;
-                        doorcount=4;
-                        createmaindoor(tabdoor);
-                        tabroom[0] = createmainroom();
+                        room_count = 1;
+                        door_count = 4;
+                        createMainDoor(tab_door);
+                        tab_room[0] = createMainRoom();
                         
-                        timer=time(NULL);
-                        time_pause=0;
-                        time_jouer=0;
-                        }
+                        timer = time(NULL);
+                        time_pause = 0;
+                        time_play = 0;
+                    }
                     break;
                 case 1:
-                    name_complet=0;
-                    Exit=0;
-                    avancement=0;
+                    complete_name = 0;
+                    Exit = 0;
+                    advancement = 0;
                     
-                    while(!name_complet && !Exit){
-                        display_name_load_menu(screen_length,screen_width,background,name,load_menu_cursor);
-                        
-                        test1=getch();
-                        if (test1==key_exit){
-                            //key echap
-                            Exit=1;
-                            }
-                        else if (test1==key_enter && avancement>=2){
-                            name_complet=1;
-                            }
+                    while(!complete_name && !Exit){
+                        displayNameLoadMenu(screen_length, screen_width, background, name, load_menu_cursor);
+                        test1 = getch();
+                        if (test1 == key_exit){
+                            //key esc
+                            Exit = 1;
+                        }
+                        else if (test1==key_enter && advancement >= 2){
+                            complete_name = 1;
+                        }
                         else if (test1==key_sup_text){
-                            avancement--;
-                            name[avancement]=0;
-                            }
+                            advancement--;
+                            name[advancement] = 0;
+                        }
                         //recover first name letter
                         else if ((48<=test1 && test1<=59) || (97<=test1 && test1<=122) || (65<=test1 && test1<=90)){
-                            name[avancement]=test1;
-                            avancement++;
-                            }
+                            name[advancement] = test1;
+                            advancement++;
                         }
-                        
-                    if (name_complet){
+                    }
+                    if (complete_name){
                         //search game
-                        int verif=EOF;
-                        if(search_save(name,fichier)){
+                        int verify = EOF;
+                        if(searchSave(name, file)){
                             int temp;
                             //Load information
                             //Load player
-                            player.stuff.name=malloc(21*sizeof(char));
-                            if(player.stuff.name==NULL){
+                            player.stuff.name = malloc(21*sizeof(char));
+                            if(player.stuff.name == NULL){
                                 printf("error calloc");
                                 exit(3);
-                                }
-                            player.blade.name=calloc(21,sizeof(char));
-                            if(player.blade.name==NULL){
+                            }
+                            player.blade.name = calloc(21,sizeof(char));
+                            if(player.blade.name == NULL){
                                 printf("error calloc");
                                 exit(3);
-                                }
-                            verif=fscanf(fichier,"%d %d %d %d %d %d %d %d %d %s %d %d %d %s %d %d ",&player.coordinates.x, &player.coordinates.y, &player.room, &player.life, &player.max_life, &player.level, &player.XP, &player.score, &player.strength, player.stuff.name, &player.stuff.id, &player.stuff.weight, &player.stuff.shield, player.blade.name, &player.blade.id, &temp);
-                            if(verif==EOF){
+                            }
+                            verify = fscanf(file, "%d %d %d %d %d %d %d %d %d %s %d %d %d %s %d %d ",
+                                          &player.coordinates.x, &player.coordinates.y, &player.room, &player.life,
+                                          &player.max_life, &player.level, &player.XP, &player.score, &player.strength,
+                                          player.stuff.name, &player.stuff.id,&player.stuff.weight,&player.stuff.shield,
+                                          player.blade.name, &player.blade.id, &temp);
+                            if(verify == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }                            
-
+                            }
                             switch(temp){
                                 case 1:
                                     player.blade.type= RANGED;
@@ -2257,727 +2135,725 @@ int main(void){
                                 case 2:
                                     player.blade.type= CC;
                                     break;
-                                }
-
-                            verif=fscanf(fichier,"%d %d %d %d ",&player.blade.range, &player.blade.dmg, &player.blade.weight, &player.nbr_object_inventory);
-                            if(verif==EOF){
+                            }
+                            verify = fscanf(file, "%d %d %d %d ", &player.blade.range, &player.blade.dmg,
+                                            &player.blade.weight, &player.nbr_object_inventory);
+                            if(verify == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
-
-                            player.inventory=calloc(15,sizeof(Object));
-                            if(player.inventory==NULL){
+                            }
+                            player.inventory = calloc(15,sizeof(Object));
+                            if(player.inventory == NULL){
                                 printf("error calloc");
                                 exit(3);
-                                }
+                            }
                             for(int i=0;i<player.nbr_object_inventory;i++){
-                                verif=fscanf(fichier,"%d",&player.inventory[i].id);
-                                if(verif==EOF){
+                                verify = fscanf(file, "%d", &player.inventory[i].id);
+                                if(verify == EOF){
                                     printf("error load charging");
                                     exit(3);
-                                    }
-                                player.inventory[i]=search_object(player.inventory[i].id,fichier_object);
                                 }
-                            player.orientation=0;
-                            player.start_hit=0;
-
+                                player.inventory[i] = searchObject(player.inventory[i].id, object_file);
+                            }
+                            player.orientation = 0;
+                            player.start_hit = 0;
                             //Load important var
-                            verif=fscanf(fichier,"%d %d %d",&roomcount, &doorcount, &maxroom);
-                            if(verif==EOF){
+                            verify = fscanf(file, "%d %d %d", &room_count, &door_count, &max_room);
+                            if(verify == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
-
-                            tabdoor = malloc(sizeof(door) * maxroom * 4);
-                            if (tabdoor == NULL) {
+                            }
+                            tab_door = malloc(sizeof(Door) * max_room * 4);
+                            if (tab_door == NULL) {
                                 exit(1);
-                                }
-
-                            tabroom = malloc(maxroom * sizeof(room));
-                            if (tabroom == NULL) {
+                            }
+                            tab_room = malloc(max_room * sizeof(Room));
+                            if (tab_room == NULL) {
                                 exit(1);
-                                }
-
-                            //Load room
-                            for(int i=0;i<roomcount;i++){
-                                verif=fscanf(fichier, "%d %d %d %d %d", &tabroom[i].x_min, &tabroom[i].x_max, &tabroom[i].y_min, &tabroom[i].y_max, &tabroom[i].nbr_enemy);
-                                if(verif==EOF){
+                            }
+                            //Load Room
+                            for(int i=0; i < room_count; i++){
+                                verify = fscanf(file, "%d %d %d %d %d", &tab_room[i].x_min, &tab_room[i].x_max,
+                                                &tab_room[i].y_min, &tab_room[i].y_max, &tab_room[i].nbr_enemy);
+                                if(verify == EOF){
                                     printf("error load charging");
                                     exit(3);
-                                    }
-
-                                //Load enemy in the room
-                                tabroom[i].tab_enemy=malloc(tabroom[i].nbr_enemy * sizeof(Enemy));
-                                if( tabroom[i].tab_enemy==NULL){
+                                }
+                                //Load enemy in the Room
+                                tab_room[i].tab_enemy = malloc(tab_room[i].nbr_enemy * sizeof(Enemy));
+                                if(tab_room[i].tab_enemy == NULL){
                                     printf("error malloc");
                                     exit(3);
-                                    }
-                                for(int j=0;j<tabroom[i].nbr_enemy;j++){
-                                    verif=fscanf(fichier,"%d",&temp);
-                                    if(verif==EOF){
+                                }
+                                for(int j=0; j < tab_room[i].nbr_enemy; j++){
+                                    verify = fscanf(file, "%d", &temp);
+                                    if(verify == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     switch(temp){
                                         case 1:
-                                            tabroom[i].tab_enemy[j].name= GIGA_ROBOT;
+                                            tab_room[i].tab_enemy[j].name= GIGA_ROBOT;
                                             break;
                                         case 2:
-                                            tabroom[i].tab_enemy[j].name= DRONE;
+                                            tab_room[i].tab_enemy[j].name= DRONE;
                                             break;
                                         case 3:
-                                            tabroom[i].tab_enemy[j].name= ALIEN;
+                                            tab_room[i].tab_enemy[j].name= ALIEN;
                                             break;
                                         case 4:
-                                            tabroom[i].tab_enemy[j].name= ROBOT;
+                                            tab_room[i].tab_enemy[j].name= ROBOT;
                                             break;
                                         case 5:
-                                            tabroom[i].tab_enemy[j].name= BLOB;
+                                            tab_room[i].tab_enemy[j].name= BLOB;
                                             break;
                                         case 6:
-                                            tabroom[i].tab_enemy[j].name= TURRET;
+                                            tab_room[i].tab_enemy[j].name= TURRET;
                                             break; 
-                                        }
-
-                                    verif=fscanf(fichier,"%d %d %d %d %d %d %d %d %d ",&tabroom[i].tab_enemy[j].coordinates.x, &tabroom[i].tab_enemy[j].coordinates.y, &tabroom[i].tab_enemy[j].life, &tabroom[i].tab_enemy[j].armor, &tabroom[i].tab_enemy[j].strength, &tabroom[i].tab_enemy[j].speed, &tabroom[i].tab_enemy[j].range, &tabroom[i].tab_enemy[j].XP, &temp);
-                                    if(verif==EOF){
+                                    }
+                                    verify = fscanf(file, "%d %d %d %d %d %d %d %d %d ",
+                                                    &tab_room[i].tab_enemy[j].coordinates.x,
+                                                    &tab_room[i].tab_enemy[j].coordinates.y,
+                                                    &tab_room[i].tab_enemy[j].life, &tab_room[i].tab_enemy[j].armor,
+                                                    &tab_room[i].tab_enemy[j].strength, &tab_room[i].tab_enemy[j].speed,
+                                                    &tab_room[i].tab_enemy[j].range,&tab_room[i].tab_enemy[j].XP,&temp);
+                                    if(verify == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
-
+                                    }
                                     switch(temp){
                                         case 1:
-                                            tabroom[i].tab_enemy[j].type= ALL_IN;
+                                            tab_room[i].tab_enemy[j].type= ALL_IN;
                                             break;
                                         case 2:
-                                            tabroom[i].tab_enemy[j].type= FLYING;
+                                            tab_room[i].tab_enemy[j].type= FLYING;
                                             break;
                                         case 3:
-                                            tabroom[i].tab_enemy[j].type= RANGE;
+                                            tab_room[i].tab_enemy[j].type= RANGE;
                                             break;
-                                        }
-                                    tabroom[i].tab_enemy[j].orientation=0;
-                                    tabroom[i].tab_enemy[j].cooldown=0;
                                     }
-
-                                verif=fscanf(fichier,"%d",&tabroom[i].nbr_object);
-                                if(verif==EOF){
-                                    printf("error load charging");
-                                    exit(3);
-                                    }
-
-                                //Load object in the room
-                                tabroom[i].tab_object=malloc(tabroom[i].nbr_object * sizeof(Object));
-                                if( tabroom[i].tab_object==NULL){
-                                    printf("error malloc");
-                                    exit(3);
-                                    }
-                                for(int j=0;j<tabroom[i].nbr_object;j++){
-                                    verif=fscanf(fichier,"%d ",&tabroom[i].tab_object[j].id);
-                                    if(verif==EOF){
-                                        printf("error load charging");
-                                        exit(3);
-                                        }
-                                    tabroom[i].tab_object[j]=search_object(tabroom[i].tab_object[j].id,fichier_object);
-                                    }
-
-                                verif=fscanf(fichier,"%d",&tabroom[i].nbr_armor);
-                                if(verif==EOF){
-                                    printf("error load charging");
-                                    exit(3);
-                                    }
-                                //Load armor in the room
-                                tabroom[i].tab_armor=malloc(tabroom[i].nbr_armor * sizeof(Armor));
-                                if( tabroom[i].tab_armor==NULL){
-                                    printf("error malloc");
-                                    exit(3);
-                                    }
-                                for(int j=0;j<tabroom[i].nbr_armor;j++){
-                                    verif=fscanf(fichier,"%d",&tabroom[i].tab_armor[j].id);
-                                    if(verif==EOF){
-                                        printf("error load charging");
-                                        exit(3);
-                                        }
-                                    tabroom[i].tab_armor[j]=search_stuff(tabroom[i].tab_armor[j].id,fichier_stuff);
-                                    }
-
-                                verif=fscanf(fichier,"%d",&tabroom[i].nbr_blade);
-                                if(verif==EOF){
-                                    printf("error load charging");
-                                    exit(3);
-                                    }      
-                                //Load blade in the room
-                                tabroom[i].tab_blade=malloc(tabroom[i].nbr_blade * sizeof(Weapon));
-                                if( tabroom[i].tab_blade==NULL){
-                                    printf("error malloc");
-                                    exit(3);
-                                    }
-                                for(int j=0;j<tabroom[i].nbr_blade;j++){
-                                    verif=fscanf(fichier,"%d",&tabroom[i].tab_blade[j].id);
-                                    if(verif==EOF){
-                                        printf("error load charging");
-                                        exit(3);
-                                        }
-                                    tabroom[i].tab_blade[j]=search_blade(tabroom[i].tab_blade[j].id,fichier_blade);
-                                    }
+                                    tab_room[i].tab_enemy[j].orientation=0;
+                                    tab_room[i].tab_enemy[j].cooldown=0;
                                 }
-                            //Load door
-                            for(int i=0;i<doorcount;i++){
-                                verif=fscanf(fichier, "%d %d %d %d %d", &tabdoor[i].x, &tabdoor[i].y, &tabdoor[i].roomNum1, &tabdoor[i].roomNum2, &tabdoor[i].direction);
-                                if(verif==EOF){
+                                verify = fscanf(file, "%d", &tab_room[i].nbr_object);
+                                if(verify == EOF){
                                     printf("error load charging");
                                     exit(3);
-                                    }
                                 }
+                                //Load object in the Room
+                                tab_room[i].tab_object = malloc(tab_room[i].nbr_object * sizeof(Object));
+                                if(tab_room[i].tab_object == NULL){
+                                    printf("error malloc");
+                                    exit(3);
+                                }
+                                for(int j=0; j < tab_room[i].nbr_object; j++){
+                                    verify = fscanf(file, "%d ", &tab_room[i].tab_object[j].id);
+                                    if(verify == EOF){
+                                        printf("error load charging");
+                                        exit(3);
+                                    }
+                                    tab_room[i].tab_object[j] = searchObject(tab_room[i].tab_object[j].id,
+                                                                             object_file);
+                                }
+                                verify=fscanf(file, "%d", &tab_room[i].nbr_armor);
+                                if(verify == EOF){
+                                    printf("error load charging");
+                                    exit(3);
+                                }
+                                //Load armor in the Room
+                                tab_room[i].tab_armor = malloc(tab_room[i].nbr_armor * sizeof(Armor));
+                                if(tab_room[i].tab_armor == NULL){
+                                    printf("error malloc");
+                                    exit(3);
+                                }
+                                for(int j=0; j < tab_room[i].nbr_armor; j++){
+                                    verify = fscanf(file, "%d", &tab_room[i].tab_armor[j].id);
+                                    if(verify == EOF){
+                                        printf("error load charging");
+                                        exit(3);
+                                    }
+                                    tab_room[i].tab_armor[j]= searchStuff(tab_room[i].tab_armor[j].id, stuff_file);
+                                }
+                                verify = fscanf(file, "%d", &tab_room[i].nbr_blade);
+                                if(verify == EOF){
+                                    printf("error load charging");
+                                    exit(3);
+                                }
+                                //Load blade in the Room
+                                tab_room[i].tab_blade = malloc(tab_room[i].nbr_blade * sizeof(Weapon));
+                                if(tab_room[i].tab_blade == NULL){
+                                    printf("error malloc");
+                                    exit(3);
+                                }
+                                for(int j=0; j < tab_room[i].nbr_blade; j++){
+                                    verify = fscanf(file, "%d", &tab_room[i].tab_blade[j].id);
+                                    if(verify == EOF){
+                                        printf("error load charging");
+                                        exit(3);
+                                    }
+                                    tab_room[i].tab_blade[j]= searchBlade(tab_room[i].tab_blade[j].id, blade_file);
+                                }
+                            }
+                            //Load Door
+                            for(int i=0; i < door_count; i++){
+                                verify = fscanf(file, "%d %d %d %d %d", &tab_door[i].x, &tab_door[i].y,
+                                                &tab_door[i].room_num1, &tab_door[i].room_num2, &tab_door[i].direction);
+                                if(verify == EOF){
+                                    printf("error load charging");
+                                    exit(3);
+                                }
+                            }
                             //Load time
-                            verif=fscanf(fichier,"%d",&time_jouer);
-                            if(verif==EOF){
+                            verify = fscanf(file, "%d", &time_play);
+                            if(verify == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
-
-                            timer=time(NULL);
-                            time_pause=0;
-                            in_game=1;
-                            end=0;
                             }
+                            timer = time(NULL);
+                            time_pause = 0;
+                            in_game = 1;
+                            end = 0;
                         }
+                    }
                     break;
                 case 2:
-                  //to be continued int the next episode
+                  //to be continued in the next episode ???
                     break;
                 case 3:
-                    in_menu=0;
+                    in_menu = 0;
                     break;
-                }
             }
+        }
         //select button
-        else if (test1==key_exit){
-            //key echap
-            in_menu=0;
-            }
-        //key up or key left
-        else if (test1==moove_up || test1==moove_left){
+        else if (test1 == key_exit){
+            //key esc
+            in_menu = 0;
+        }
+        //left key or up key
+        else if (test1 == move_up || test1 == move_left){
             menu_cursor--;
-            }
-        //key down
-        else if (test1==moove_down || test1==moove_right){
+        }
+        //down key
+        else if (test1 == move_down || test1 == move_right){
             menu_cursor++;
-            }
+        }
         //keeps the menu cursor on a button
-        menu_cursor=(menu_cursor+4)%4;
-        
+        menu_cursor = (menu_cursor+4)%4;
         while(in_game){
             if(!in_pause && !in_inventory){
                 //display game
-                display_game(screen_length,screen_width,player,background,timer,time_pause,time_jouer,time_to_play,&end);
+                displayGame(screen_length, screen_width, player, background, timer, time_pause, time_play,
+                            time_to_play, &end);
 
-                //display donjon
-                display_donjon(screen_length,screen_width,player,doorcount,tabdoor,roomcount,tabroom,donjon);
+                //display dungeon
+                displayDungeon(screen_length, screen_width, player, door_count, tab_door, room_count, tab_room,dungeon);
 
                 test1=getch();
 
                 //select button
-                if (test1==key_exit){
-                    //key echap
-                    in_pause=1;
-                    time_start_pause=time(NULL);
+                if (test1 == key_exit){
+                    //key esc
+                    in_pause = 1;
+                    time_start_pause = time(NULL);
 
                     //display pause menu
-                    display_game(screen_length,screen_width,player,background,timer,time_pause,time_jouer,time_to_play,&end);
+                    displayGame(screen_length, screen_width, player, background, timer, time_pause, time_play,
+                                time_to_play, &end);
 
-                    move(screen_width/2,screen_length/2);
+                    move(screen_width/2, screen_length/2);
                     printw("pause");
-                    move(screen_width+10,screen_length+10);
+                    move(screen_width+10, screen_length+10);
                     refresh();
                     }
                 //key up
-                else if (test1==moove_up){
-                    player.orientation=0;
-                    //moove into door
-                    if(player.coordinates.y==tabroom[player.room].y_max){
-                        for(int i=0;i<doorcount;i++){
-                            if(tabdoor[i].x==player.coordinates.x && tabdoor[i].y-1==player.coordinates.y){
+                else if (test1 == move_up){
+                    player.orientation = 0;
+                    //move into Door
+                    if(player.coordinates.y == tab_room[player.room].y_max){
+                        for(int i=0; i < door_count; i++){
+                            if(tab_door[i].x == player.coordinates.x && tab_door[i].y - 1 == player.coordinates.y){
                                 player.coordinates.y+=2;
-                                if(tabdoor[i].roomNum2 == -1){
-                                    //générer room
-                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
-                                    
-                                    //générer mobs armor blade   
-                                    tabroom[roomcount-1].nbr_enemy=rand()%5;
-                                    tabroom[roomcount-1].nbr_object=rand()%2;
-                                    tabroom[roomcount-1].nbr_armor=rand()%1;
-                                    tabroom[roomcount-1].nbr_blade=rand()%1;
+                                if(tab_door[i].room_num2 == -1){
+                                    //generate Room
+                                    tab_room[room_count]= generateRoom(seed, &max_room, tab_room, &tab_door[i], &room_count,
+                                                                       tab_door, &door_count);
+                                    //generate mobs armor blade
+                                    tab_room[room_count - 1].nbr_enemy = rand() % 5;
+                                    tab_room[room_count - 1].nbr_object = rand() % 2;
+                                    tab_room[room_count - 1].nbr_armor = rand() % 1;
+                                    tab_room[room_count - 1].nbr_blade = rand() % 1;
                                     seed+=4;
 
-                                    enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
-                                    stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
-                                    }
-                                if(player.room==tabdoor[i].roomNum1){
-                                    player.room=tabdoor[i].roomNum2;
-                                    }
+                                    enemySpawn(tab_room[room_count - 1].nbr_enemy, &tab_room[room_count - 1],
+                                               &seed);
+                                    stuffSpawn(&tab_room[room_count - 1], object_file, blade_file,
+                                               stuff_file, &seed);
+                                }
+                                if(player.room == tab_door[i].room_num1){
+                                    player.room = tab_door[i].room_num2;
+                                }
                                 else{
-                                    player.room=tabdoor[i].roomNum1;
-                                    }
+                                    player.room = tab_door[i].room_num1;
                                 }
                             }
                         }
+                    }
                     else{
                         player.coordinates.y++;
-                        }
                     }
-                //key down
-                else if (test1==moove_down){
-                    player.orientation=2;
-                    //moove into door
-                    if(player.coordinates.y==tabroom[player.room].y_min){
-                        for(int i=0;i<doorcount;i++){
-                            if(tabdoor[i].x==player.coordinates.x && tabdoor[i].y+1==player.coordinates.y){
+                }
+                //down key
+                else if (test1 == move_down){
+                    player.orientation = 2;
+                    //move into Door
+                    if(player.coordinates.y == tab_room[player.room].y_min){
+                        for(int i=0; i < door_count; i++){
+                            if(tab_door[i].x == player.coordinates.x && tab_door[i].y + 1 == player.coordinates.y){
                                 player.coordinates.y-=2;
-                                if(tabdoor[i].roomNum2 == -1){
-                                    //générer room
-                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
-                                    
-                                    //générer mobs armor blade    
-                                    tabroom[roomcount-1].nbr_enemy=rand()%5;
-                                    tabroom[roomcount-1].nbr_object=rand()%2;
-                                    tabroom[roomcount-1].nbr_armor=rand()%1;
-                                    tabroom[roomcount-1].nbr_blade=rand()%1;
+                                if(tab_door[i].room_num2 == -1){
+                                    //generate Room
+                                    tab_room[room_count] = generateRoom(seed, &max_room,tab_room,&tab_door[i],
+                                                                        &room_count,tab_door, &door_count);
+                                    //generate mobs armor blade
+                                    tab_room[room_count - 1].nbr_enemy = rand() % 5;
+                                    tab_room[room_count - 1].nbr_object = rand() % 2;
+                                    tab_room[room_count - 1].nbr_armor = rand() % 1;
+                                    tab_room[room_count - 1].nbr_blade = rand() % 1;
                                     seed+=4;
 
-                                    enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
-                                    stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
-                                    }
-                                if(player.room==tabdoor[i].roomNum1){
-                                    player.room=tabdoor[i].roomNum2;
-                                    }
+                                    enemySpawn(tab_room[room_count - 1].nbr_enemy, &tab_room[room_count - 1],
+                                               &seed);
+                                    stuffSpawn(&tab_room[room_count - 1], object_file, blade_file,
+                                               stuff_file, &seed);
+                                }
+                                if(player.room == tab_door[i].room_num1){
+                                    player.room = tab_door[i].room_num2;
+                                }
                                 else{
-                                    player.room=tabdoor[i].roomNum1;
-                                    }
+                                    player.room = tab_door[i].room_num1;
+                                }
                                 }
                             }
                         }
                     else{
                         player.coordinates.y--;
-                        }
                     }
+                }
                 //key left
-                else if (test1==moove_left){
+                else if (test1 == move_left){
                     player.orientation=3;
-                    //moove into door
-                    if(player.coordinates.x==tabroom[player.room].x_min){
-                        for(int i=0;i<doorcount;i++){
-                            if(tabdoor[i].y==player.coordinates.y && tabdoor[i].x+1==player.coordinates.x){
+                    //move into Door
+                    if(player.coordinates.x == tab_room[player.room].x_min){
+                        for(int i=0; i < door_count; i++){
+                            if(tab_door[i].y == player.coordinates.y && tab_door[i].x + 1 == player.coordinates.x){
                                 player.coordinates.x-=2;
-                                if(tabdoor[i].roomNum2 == -1){
-                                    //générer room
-                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
-                                    
-                                    //générer mobs armor 
-                                    tabroom[roomcount-1].nbr_enemy=rand()%5;
-                                    tabroom[roomcount-1].nbr_object=rand()%2;
-                                    tabroom[roomcount-1].nbr_armor=rand()%1;
-                                    tabroom[roomcount-1].nbr_blade=rand()%1;
-
+                                if(tab_door[i].room_num2 == -1){
+                                    //generate Room
+                                    tab_room[room_count] = generateRoom(seed, &max_room,tab_room,&tab_door[i],
+                                                                        &room_count,tab_door, &door_count);
+                                    //generate mobs armor
+                                    tab_room[room_count - 1].nbr_enemy = rand() % 5;
+                                    tab_room[room_count - 1].nbr_object = rand() % 2;
+                                    tab_room[room_count - 1].nbr_armor = rand() % 1;
+                                    tab_room[room_count - 1].nbr_blade = rand() % 1;
                                     seed+=4;
 
-                                    enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
-                                    stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff, &seed);
-                                    }
-                                if(player.room==tabdoor[i].roomNum1){
-                                    player.room=tabdoor[i].roomNum2;
-                                    }
+                                    enemySpawn(tab_room[room_count - 1].nbr_enemy, &tab_room[room_count - 1],
+                                               &seed);
+                                    stuffSpawn(&tab_room[room_count - 1], object_file, blade_file,
+                                               stuff_file, &seed);
+                                }
+                                if(player.room == tab_door[i].room_num1){
+                                    player.room = tab_door[i].room_num2;
+                                }
                                 else{
-                                    player.room=tabdoor[i].roomNum1;
-                                    }
+                                    player.room = tab_door[i].room_num1;
                                 }
                             }
                         }
+                    }
                     else{
                         player.coordinates.x--;
-                        }
                     }
+                }
                 //key right
-                if (test1==moove_right){
-                    player.orientation=1;
-                    //moove into door
-                    if(player.coordinates.x==tabroom[player.room].x_max){
-                        for(int i=0;i<doorcount;i++){
-                            if(tabdoor[i].y==player.coordinates.y && tabdoor[i].x-1==player.coordinates.x){
+                if (test1 == move_right){
+                    player.orientation = 1;
+                    //move into Door
+                    if(player.coordinates.x == tab_room[player.room].x_max){
+                        for(int i=0; i < door_count; i++){
+                            if(tab_door[i].y == player.coordinates.y && tab_door[i].x - 1 == player.coordinates.x){
                                 player.coordinates.x+=2;
-                                if(tabdoor[i].roomNum2 == -1){
-                                    //générer room
-                                    tabroom[roomcount]=generateroom(seed,&maxroom,tabroom,&tabdoor[i],&roomcount,tabdoor,&doorcount);
-
-                                    //générer mobs armor blade
+                                if(tab_door[i].room_num2 == -1){
+                                    //generate Room
+                                    tab_room[room_count] = generateRoom(seed, &max_room,tab_room,&tab_door[i],
+                                                                        &room_count, tab_door, &door_count);
+                                    //generate mobs armor blade
                                     /*
-                                    tabroom[roomcount-1].nbr_enemy=rand()%5;
-                                    tabroom[roomcount-1].nbr_object=rand()%2;
-                                    tabroom[roomcount-1].nbr_armor=rand()%1;
-                                    tabroom[roomcount-1].nbr_blade=rand()%1;
+                                    tab_room[room_count-1].nbr_enemy = rand()%5;
+                                    tab_room[room_count-1].nbr_object = rand()%2;
+                                    tab_room[room_count-1].nbr_armor = rand()%1;
+                                    tab_room[room_count-1].nbr_blade = rand()%1;
                                     */
-                                    tabroom[roomcount-1].nbr_enemy=0;
-                                    tabroom[roomcount-1].nbr_object=1;
-                                    tabroom[roomcount-1].nbr_armor=1;
-                                    tabroom[roomcount-1].nbr_blade=1;
-
-
+                                    tab_room[room_count - 1].nbr_enemy = 0;
+                                    tab_room[room_count - 1].nbr_object = 1;
+                                    tab_room[room_count - 1].nbr_armor = 1;
+                                    tab_room[room_count - 1].nbr_blade = 1;
                                     seed+=4;
 
-                                    enemySpawn(tabroom[roomcount-1].nbr_enemy, &tabroom[roomcount-1], &seed);
-                                    stuffSpawn(&tabroom[roomcount-1], fichier_object, fichier_blade, fichier_stuff,&seed);
-                                    }
-                                if(player.room==tabdoor[i].roomNum1){
-                                    player.room=tabdoor[i].roomNum2;
-                                    }
+                                    enemySpawn(tab_room[room_count - 1].nbr_enemy, &tab_room[room_count - 1],
+                                               &seed);
+                                    stuffSpawn(&tab_room[room_count - 1], object_file, blade_file,
+                                               stuff_file, &seed);
+                                }
+                                if(player.room == tab_door[i].room_num1){
+                                    player.room = tab_door[i].room_num2;
+                                }
                                 else{
-                                    player.room=tabdoor[i].roomNum1;
-                                    }
+                                    player.room = tab_door[i].room_num1;
                                 }
                             }
                         }
+                    }
                     else{
                         player.coordinates.x++;
-                        }
                     }
-
-                //press 0
-                else if(test1==key_inventory){
-                    //open inventory
-                    in_inventory=1;
-                    inventory_cursor=0;
-                    }
-        
-                //press enter
-                else if(test1==key_enter){
-                    //collect thing
-                    collect_object(&player,tabroom);
-                    collect_armor(&player,tabroom,screen_length,screen_width,background,timer,time_pause,time_jouer,time_to_play,&end);
-                    collect_blade(&player,tabroom,screen_length,screen_width,background,timer,time_pause,time_jouer,time_to_play,&end);
-                    }
-                    
-                else if(test1==key_fight){
-                    //attack
-                    player.start_hit=time(NULL);
-                    you_hit(&player,tabroom);
-                    }
-
                 }
+                //press 0
+                else if(test1 == key_inventory){
+                    //open inventory
+                    in_inventory = 1;
+                    inventory_cursor = 0;
+                }
+                //press enter
+                else if(test1 == key_enter){
+                    //collect thing
+                    collectObject(&player, tab_room);
+                    collectArmor(&player, tab_room, screen_length, screen_width, background, timer, time_pause,
+                                 time_play, time_to_play, &end);
+                    collectBlade(&player, tab_room, screen_length, screen_width, background, timer, time_pause,
+                                 time_play, time_to_play, &end);
+                    }
+                else if(test1 == key_fight){
+                    //attack
+                    player.start_hit = time(NULL);
+                    youHit(&player, tab_room);
+                }
+            }
             else if(in_pause){
-                test1=getch();
-                if (test1==key_exit){
-                    //key echap
-                    in_game=0;
-                    in_pause=0;
-                    menu_cursor=0;
-                    time_pause+=time(NULL)-time_start_pause;
-                    time_jouer+=(time(NULL)-timer)-time_pause;
-
-                    //save
+                test1 = getch();
+                if (test1 == key_exit){
+                    //key esc
+                    in_game = 0;
+                    in_pause = 0;
+                    menu_cursor = 0;
+                    time_pause += time(NULL) - time_start_pause;
+                    time_play += (time(NULL) - timer) - time_pause;
                     //save player
-                    int verif2=EOF;
-                    if(!search_save(name,fichier)){
-                        verif2=fprintf(fichier,"@%s",name);
-                        if(verif2==EOF){
+                    int verify2 = EOF;
+                    if(!searchSave(name, file)){
+                        verify2 = fprintf(file, "@%s", name);
+                        if(verify2 == EOF){
                             printf("error load charging");
                             exit(5);
-                            }  
                         }
-                    verif2=fprintf(fichier," ");
-                    if(verif2==EOF){
+                    }
+                    verify2 = fprintf(file, " ");
+                    if(verify2 == EOF){
                         printf("error load charging");
                         exit(5);
-                        }
-
-                    verif2=fprintf(fichier,"%d %d %d %d %d %d %d %d %d %s %d %d %d %s %d ", player.coordinates.x, player.coordinates.y, player.room, player.life, player.max_life, player.level, player.XP, player.score, player.strength, player.stuff.name, player.stuff.id, player.stuff.weight, player.stuff.shield, player.blade.name, player.blade.id);
-                    if(verif2==EOF){
+                    }
+                    verify2 = fprintf(file, "%d %d %d %d %d %d %d %d %d %s %d %d %d %s %d ", player.coordinates.x,
+                                    player.coordinates.y, player.room, player.life, player.max_life, player.level,
+                                    player.XP, player.score, player.strength, player.stuff.name, player.stuff.id,
+                                    player.stuff.weight, player.stuff.shield, player.blade.name, player.blade.id);
+                    if(verify2 == EOF){
                         printf("error load charging");
                         exit(5);
-                        }   
-
+                    }
                     switch (player.blade.type){
                         case RANGED:
-                            verif2=fprintf(fichier,"1 ");
-                            if(verif2==EOF){
+                            verify2 = fprintf(file, "1 ");
+                            if(verify2 == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
+                            }
                             break;
                         case CC:
-                            verif2=fprintf(fichier,"2 ");
-                            if(verif2==EOF){
+                            verify2 = fprintf(file, "2 ");
+                            if(verify2 == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
+                            }
                             break;    
-                        }
-                    verif2=fprintf(fichier,"%d %d %d %d ",player.blade.range, player.blade.dmg, player.blade.weight, player.nbr_object_inventory);
-                    if(verif2==EOF){
+                    }
+                    verify2 = fprintf(file, "%d %d %d %d ", player.blade.range, player.blade.dmg, player.blade.weight,
+                                      player.nbr_object_inventory);
+                    if(verify2 == EOF){
                         printf("error load charging");
                         exit(3);
-                        }
-
+                    }
                     //save inventory (object)
                     for(int i=0;i<player.nbr_object_inventory;i++){
-                        verif2=fprintf(fichier,"%d ",player.inventory[i].id);
-                        if(verif2==EOF){
+                        verify2 = fprintf(file, "%d ", player.inventory[i].id);
+                        if(verify2 == EOF){
                             printf("error load charging");
                             exit(3);
-                            }
                         }
-
+                    }
                     //save important var
-                    verif2=fprintf(fichier,"%d %d %d ", roomcount, doorcount, maxroom);
-                    if(verif2==EOF){
+                    verify2 = fprintf(file, "%d %d %d ", room_count, door_count, max_room);
+                    if(verify2 == EOF){
                         printf("error load charging");
                         exit(3);
-                        }
-
-                    //save room
-                    for(int i=0;i<roomcount;i++){
-                        verif2=fprintf(fichier, "%d %d %d %d %d ", tabroom[i].x_min, tabroom[i].x_max, tabroom[i].y_min, tabroom[i].y_max, tabroom[i].nbr_enemy);
-                        if(verif2==EOF){
+                    }
+                    //save Room
+                    for(int i=0; i < room_count; i++){
+                        verify2 = fprintf(file, "%d %d %d %d %d ", tab_room[i].x_min, tab_room[i].x_max,
+                                          tab_room[i].y_min, tab_room[i].y_max, tab_room[i].nbr_enemy);
+                        if(verify2 == EOF){
                             printf("error load charging");
                             exit(3);
-                            }
-
-                        //save enemy in the room
-                        for(int j=0;j<tabroom[i].nbr_enemy;j++){
-                            switch(tabroom[i].tab_enemy[j].name){
+                        }
+                        //save enemy in the Room
+                        for(int j=0; j < tab_room[i].nbr_enemy; j++){
+                            switch(tab_room[i].tab_enemy[j].name){
                                 case GIGA_ROBOT:
-                                    verif2=fprintf(fichier,"1 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "1 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case DRONE:
-                                    verif2=fprintf(fichier,"2 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "2 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case ALIEN:
-                                    verif2=fprintf(fichier,"3 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "3 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case ROBOT:
-                                    verif2=fprintf(fichier,"4 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "4 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case BLOB:
-                                    verif2=fprintf(fichier,"6 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "6 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case TURRET:
-                                    verif2=fprintf(fichier,"7 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "7 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
-                                }
-
-                            verif2=fprintf(fichier,"%d %d %d %d %d %d %d %d ",tabroom[i].tab_enemy[j].coordinates.x, tabroom[i].tab_enemy[j].coordinates.y, tabroom[i].tab_enemy[j].life, tabroom[i].tab_enemy[j].armor, tabroom[i].tab_enemy[j].strength, tabroom[i].tab_enemy[j].speed, tabroom[i].tab_enemy[j].range, tabroom[i].tab_enemy[j].XP);
-                            if(verif2==EOF){
+                            }
+                            verify2 = fprintf(file, "%d %d %d %d %d %d %d %d ", tab_room[i].tab_enemy[j].coordinates.x,
+                                              tab_room[i].tab_enemy[j].coordinates.y, tab_room[i].tab_enemy[j].life,
+                                              tab_room[i].tab_enemy[j].armor, tab_room[i].tab_enemy[j].strength,
+                                              tab_room[i].tab_enemy[j].speed, tab_room[i].tab_enemy[j].range,
+                                              tab_room[i].tab_enemy[j].XP);
+                            if(verify2 == EOF){
                                 printf("error load charging");
                                 exit(3);
-                                }
-
-                            switch(tabroom[i].tab_enemy[j].type){
+                            }
+                            switch(tab_room[i].tab_enemy[j].type){
                                 case ALL_IN:
-                                    verif2=fprintf(fichier,"1 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "1 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case FLYING:
-                                    verif2=fprintf(fichier,"2 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "2 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
                                 case RANGE:
-                                    verif2=fprintf(fichier,"3 ");
-                                    if(verif2==EOF){
+                                    verify2 = fprintf(file, "3 ");
+                                    if(verify2 == EOF){
                                         printf("error load charging");
                                         exit(3);
-                                        }
+                                    }
                                     break;
-                                }
-                            }
-
-                        verif2=fprintf(fichier,"%d ",tabroom[i].nbr_object);
-                        if(verif2==EOF){
-                            printf("error load charging");
-                            exit(3);
-                            }
-                        //save object
-                        for(int j=0;j<tabroom[i].nbr_object;j++){
-                            verif2=fprintf(fichier,"%d ",tabroom[i].tab_object[j].id);
-                            if(verif2==EOF){
-                                printf("error load charging");
-                                exit(3);
-                                }
-                            }
-
-                        verif2=fprintf(fichier,"%d ",tabroom[i].nbr_armor);
-                        if(verif2==EOF){
-                            printf("error load charging");
-                            exit(3);
-                            }
-                        //save armor
-                        for(int j=0;j<tabroom[i].nbr_armor;j++){
-                            verif2=fprintf(fichier,"%d ",tabroom[i].tab_armor[j].id);
-                            if(verif2==EOF){
-                                printf("error load charging");
-                                exit(3);
-                                }
-                            }
-
-                        verif2=fprintf(fichier,"%d ",tabroom[i].nbr_blade);
-                        if(verif2==EOF){
-                            printf("error load charging");
-                            exit(3);
-                            }
-                        //save blade
-                        for(int j=0;j<tabroom[i].nbr_blade;j++){
-                            verif2=fprintf(fichier,"%d ",tabroom[i].tab_blade[j].id);
-                            if(verif2==EOF){
-                                printf("error load charging");
-                                exit(3);
-                                }
                             }
                         }
-                    //save door
-                    for(int i=0;i<doorcount;i++){
-                        verif2=fprintf(fichier, "%d %d %d %d %d ", tabdoor[i].x, tabdoor[i].y, tabdoor[i].roomNum1, tabdoor[i].roomNum2, tabdoor[i].direction);
-                        if(verif2==EOF){
+                        verify2 = fprintf(file, "%d ", tab_room[i].nbr_object);
+                        if(verify2 == EOF){
                             printf("error load charging");
                             exit(3);
+                        }
+                        //save object
+                        for(int j=0; j < tab_room[i].nbr_object; j++){
+                            verify2 = fprintf(file, "%d ", tab_room[i].tab_object[j].id);
+                            if(verify2 == EOF){
+                                printf("error load charging");
+                                exit(3);
                             }
-                      }
+                        }
+                        verify2=fprintf(file, "%d ", tab_room[i].nbr_armor);
+                        if(verify2 == EOF){
+                            printf("error load charging");
+                            exit(3);
+                        }
+                        //save armor
+                        for(int j=0; j < tab_room[i].nbr_armor; j++){
+                            verify2 = fprintf(file, "%d ", tab_room[i].tab_armor[j].id);
+                            if(verify2 == EOF){
+                                printf("error load charging");
+                                exit(3);
+                            }
+                        }
+
+                        verify2 = fprintf(file, "%d ", tab_room[i].nbr_blade);
+                        if(verify2 == EOF){
+                            printf("error load charging");
+                            exit(3);
+                        }
+                        //save blade
+                        for(int j=0; j < tab_room[i].nbr_blade; j++){
+                            verify2 = fprintf(file, "%d ", tab_room[i].tab_blade[j].id);
+                            if(verify2 == EOF){
+                                printf("error load charging");
+                                exit(3);
+                            }
+                        }
+                    }
+                    //save Door
+                    for(int i=0; i < door_count; i++){
+                        verify2 = fprintf(file, "%d %d %d %d %d ", tab_door[i].x, tab_door[i].y, tab_door[i].room_num1,
+                                          tab_door[i].room_num2, tab_door[i].direction);
+                        if(verify2 == EOF){
+                            printf("error load charging");
+                            exit(3);
+                        }
+                    }
                     //save time
-                    verif2=fprintf(fichier,"%d\n",time_jouer);
-                    if(verif2==EOF){
+                    verify2 = fprintf(file, "%d\n", time_play);
+                    if(verify2 == EOF){
                         printf("error load charging");
                         exit(5);
-                        }
-                    }
-                else if(test1!=-1){
-                    //continue
-                    in_pause=0;
-                    time_pause+=time(NULL)-time_start_pause;
                     }
                 }
+                else if(test1!=-1){
+                    //continue
+                    in_pause = 0;
+                    time_pause += time(NULL)-time_start_pause;
+                }
+            }
 
             else if(in_inventory){
                 //display game
-                display_game(screen_length,screen_width,player,background,timer,time_pause,time_jouer,time_to_play,&end);
+                displayGame(screen_length, screen_width, player, background, timer, time_pause, time_play,
+                            time_to_play, &end);
                 //display inventory menu
-                display_inventory_menu(screen_length,screen_width,player,donjon,inventory_cursor);
+                displayInventoryMenu(screen_length, screen_width, player, dungeon, inventory_cursor);
 
-                test1=getch();
-                if (test1==key_exit || test1==key_inventory){
+                test1 = getch();
+                if (test1 == key_exit || test1 == key_inventory){
                     //close inventory
-                    in_inventory=0;
-                    }
-                //key up
-                else if (test1==moove_up && inventory_cursor-5>=0){
+                    in_inventory = 0;
+                }
+                //up key
+                else if (test1 == move_up && inventory_cursor - 5 >= 0){
                     inventory_cursor-=5;
                     }
-                //key down
-                else if (test1==moove_down && inventory_cursor+5<=14){ //inventory size-1
+                //down key
+                else if (test1 == move_down && inventory_cursor + 5 <= 14){ //inventory size-1
                     inventory_cursor+=5;
                     }
-                //key left
-                else if (test1==moove_left && inventory_cursor-1>=0){
+                //left key
+                else if (test1 == move_left && inventory_cursor - 1 >= 0){
                     inventory_cursor--;
                     }
-                //key right
-                else if (test1==moove_right && inventory_cursor+1<=14){//inventory size-1
+                //right key
+                else if (test1 == move_right && inventory_cursor + 1 <= 14){//inventory size-1
                     inventory_cursor++;
                     }
                 //press *
-                else if(test1==key_delete){
+                else if(test1 == key_delete){
                     do{
                         //refresh the timer
                         //display game
-                        display_game(screen_length,screen_width,player,background,timer,time_pause,time_jouer,time_to_play,&end);
+                        displayGame(screen_length, screen_width, player, background, timer, time_pause, time_play,
+                                    time_to_play, &end);
                         //display inventory menu
-                        display_inventory_menu(screen_length,screen_width,player,donjon,inventory_cursor);
-                        //verfication
+                        displayInventoryMenu(screen_length, screen_width, player, dungeon, inventory_cursor);
+                        //verification
                         attron(COLOR_PAIR(8));
-                        mvprintw(screen_width-4,4,"are you sure you want to delete this item %s?",player.inventory[inventory_cursor].name);
-                        mvprintw(screen_width-3,4,"y/n");
+                        mvprintw(screen_width-4, 4, "are you sure you want to delete this item %s?",
+                                 player.inventory[inventory_cursor].name);
+                        mvprintw(screen_width-3, 4, "y/n");
                         refresh();
 
-                        test1=getch();
+                        test1 = getch();
                         //yes
-                        if(test1==121){
-                            player.inventory[inventory_cursor]=player.inventory[player.nbr_object_inventory];
-                            player.inventory[player.nbr_object_inventory].id=0;
+                        if(test1 == 121){
+                            player.inventory[inventory_cursor] = player.inventory[player.nbr_object_inventory];
+                            player.inventory[player.nbr_object_inventory].id = 0;
                             player.nbr_object_inventory--;
-                            }
+                        }
                     }while(test1!=121 && test1!=110);
-
-                    }
+                }
                 //press enter
                 else if(test1==key_enter){
                     //use item
-                    use_object(&player,inventory_cursor);
-                    }
+                    useObject(&player, inventory_cursor);
                 }
-/* 
-            for(int i=0;i<tabroom[player.room].nbr_enemy;i++){
-                //mobOrientation(&tabroom[player.room].tab_enemy[i], &player);
-                //moveMob(Enemy* a, hero* player, room* b)
+            }
+/*
+            for(int i=0;i<tab_room[player.Room].nbr_enemy;i++){
+                //mobOrientation(&tab_room[player.Room].tab_enemy[i], &player);
+                //moveMob(Enemy* a, Hero* player, Room* b)
                 }
 */
-            //ennemy enters or hits player
-            be_hit(&player,tabroom);
+            //enemy enters or hits player
+            beHit(&player, tab_room);
+            winLevel(&player);
             
-            win_level(&player);
-            
-            if(!in_pause && player.life<=0){
+            if(!in_pause && player.life <= 0){
                 death(&player);
-                }
-            if(end && player.score<100){
+            }
+            if(end && player.score < 100){
                 clear();
                 attron(COLOR_PAIR(16));
                 printw("YOU LOSE, the monsters have damaged your space ship, you won't get far now.");
                 refresh();
                 do{
-                test1=getch();
-                }while(test1==-1);
-                in_game=0;
-                }
-            else if(player.score>=100){
+                test1 = getch();
+                }while(test1 == -1);
+                in_game = 0;
+            }
+            else if(player.score >= 100){
                 clear();
                 attron(COLOR_PAIR(16));
                 printw("YOU WIN, you have enough materials to repair your space ships");
                 refresh();
                 do{
-                test1=getch();
-                }while(test1==-1);
-                in_game=0;
-                }
+                test1 = getch();
+                }while(test1 == -1);
+                in_game = 0;
             }
         }
+    }
     free(player.inventory);
     delwin(background);
     endwin();
     return 0;
-    }
+}
