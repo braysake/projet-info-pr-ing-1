@@ -680,7 +680,7 @@ generateRoom (int *seed, Room * tab_room,
 						{
 							for (int j = 0; j < 4; j++)
 								{
-									new_room.room_door[i] = -1;
+									new_room.room_door[j] = -1;
 								}
 							switch (tab_door[i].direction)
 								{
