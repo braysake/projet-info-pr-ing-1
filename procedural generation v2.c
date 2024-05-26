@@ -24,16 +24,6 @@ typedef struct
 
 } Room;
 
-/*void makegrid(int grid[MAX_ROOM*13][MAX_ROOM*13], Door* tabdoor, int doorcount, Room* tabroom, int roomcount){
-  for(int i=0;i<roomcount; i++) {
-    for(int j=tabdoor[i].xmin; j<=tabdoor[i].xmax; j++){
-      for(int h=tabdoor[i].ymin; h<=tabdoor[i].ymax; h++){
-        grid[((MAX_ROOM*13)/2)+j]
-      }
-    }
-  } 
-}*/
-
 int
 searchneardoor (Door * tabdoor, Door testdoor, int doorcount)
 {
