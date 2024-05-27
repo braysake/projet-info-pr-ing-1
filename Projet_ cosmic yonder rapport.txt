@@ -1,0 +1,14 @@
+﻿Projet: 
+Cosmic Yonder
+
+
+Equipe:
+Malle Mathéo
+Qureshi Hussain
+LÊ Irssane
+
+
+
+
+Rapport:
+Notre équipe, composée de trois élèves de Cytech en préing 1 de la classe MI5, a choisi pour objectif de réaliser le projet d’informatique: Cosmic Yonder. Ce projet consiste à réaliser un jeu dans lequel le joueur doit se déplacer à l’intérieur d’un donjon généré procéduralement, pour atteindre un objectif, le tout dans une contexte centré sur l’espace et la science-fiction. Nous avons commencé à travailler sur ce projet en nous répartissant les tâches, un s’occuperait de la génération procédurale, l’autre de l’affichage et de la sauvegarde, et le dernier du gameplay et du game design. Chaque membre à fait preuve de sérieux, a su travailler assidûment et assister aux réunions tenues régulièrement pour discuter de l’avancement du projet. Les principales difficultés que nous avons rencontrés étaient liés à la génération procédurale, le donjon ne se générait pas de la bonne manière ce qui empêchait l'équipe d’avancer correctement, même maintenant la génération du donjon reste problématique, le chargé de la génération procédurale n’ayant pas réussi à coder un donjon sans erreur. Dû aux différents problèmes lors de la réalisation du projet, l'équipe s’est retrouvée dans une situation de crunch, les deux derniers jours avant la remise du projet, finalisant certains aspects et corrigeant certains problèmes du programme. Nous avons malgré tout réussi à finaliser un projet semi-abouti, permettant parfois de lancer le jeu et de finir une partie.
